@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato&family=Roboto&display=swap');
+
+header {
+    display: flex;
+}
+
+header img {
+    width: 268px;
+    margin: 25px auto;
+}
+
+body {
+    width: 1240px;
+    margin: auto;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+}
+
+.search div {
+    width: 100%;
+    position: relative;
+    display: flex;
+}
+
+.search i {
+    position: absolute;
+    top: 18px;
+    right: 15px;
+    font-size: 32px;
+}
+
+#search-bar {
+    width: 100%;
+    height: 69px;
+    background-color: #e7e7e7;
+    border-radius: 5px;
+    border: 0px;
+    outline: 0px;
+    font-family: 'Lato';
+    font-weight: 400;
+    font-size: 18px;
+    padding: 0px 24px;
+}
+
+.recipes {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 50px;
+    margin-top: 82px;
+    margin-bottom: 100px;
+}
+
+.card {
+    text-decoration: none;
+    max-height: 364px;
+}
+
+
+.card .photo {
+    height: 178px;
+    width: 100%;
+    background-color: #c7bebe;
+    border-radius: 5px 5px 0px 0px;
+}
+
+.card .recette {
+    min-height: 186px;
+    width: 100%;
+    background-color: #e7e7e7; 
+    border-radius: 0px 0px 5px 5px;
+}
+
+.recette {
+    color: black;  
+}
+
+.card h2 {
+    margin: 20px;
+    font-weight: 400;
+    font-size: 18px;
+}
+
+.recette span {
+    font-weight: 700;
+    margin-right: 20px;
+}
+
+.recette i {
+    font-size: 20px;
+    margin-right: 7px;
+}
+
+.recette>div:first-child {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.recette .details {
+    display: flex;
+    height: 100%;
+}
+
+.recette .ingredients {
+    width: 50%;
+}
+
+.desc {
+    font-family: 'Roboto', sans-serif;;
+    font-size: 12px;
+    width: 50%;
+    margin: 0px 10px 15px 0px;
+    height: 100%;
+    text-overflow:ellipsis;
+    overflow: hidden;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    white-space: break-spaces;
+}
+
+.ingredients {
+    font-size: 12px;
+    padding-left: 18px;
+    width: 50%;
+    height: 100%;
+    text-overflow: clip;
+    overflow: hidden;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    white-space: break-spaces;
+}
+
+
+.ingredients>p {
+    margin: 0;
+    font-weight: 700;
+    line-height: 14px;    
+}
+.ingredients>p>span {
+    font-weight: 400;
+    padding-left: 3px;
+}
