@@ -18,7 +18,7 @@ body {
     font-size: 18px;
 }
 
-.search div {
+.search>div {
     width: 100%;
     position: relative;
     display: flex;
@@ -68,12 +68,12 @@ body {
 .card .recette {
     min-height: 186px;
     width: 100%;
-    background-color: #e7e7e7; 
+    background-color: #e7e7e7;
     border-radius: 0px 0px 5px 5px;
 }
 
 .recette {
-    color: black;  
+    color: black;
 }
 
 .card h2 {
@@ -108,12 +108,13 @@ body {
 }
 
 .desc {
-    font-family: 'Roboto', sans-serif;;
+    font-family: 'Roboto', sans-serif;
+    ;
     font-size: 12px;
     width: 50%;
     margin: 0px 10px 15px 0px;
     height: 100%;
-    text-overflow:ellipsis;
+    text-overflow: ellipsis;
     overflow: hidden;
     display: -webkit-box !important;
     -webkit-line-clamp: 6;
@@ -138,9 +139,137 @@ body {
 .ingredients>p {
     margin: 0;
     font-weight: 700;
-    line-height: 14px;    
+    line-height: 14px;
 }
+
 .ingredients>p>span {
     font-weight: 400;
     padding-left: 3px;
+}
+
+/*-------------------------------------------------------*/
+/*                      COMBOS                           */
+/*-------------------------------------------------------*/
+
+#combos {
+    margin-top: 20px;
+}
+
+.combo input::placeholder {
+    color: white;
+}
+
+.combo {
+    position: relative;
+    margin-right: 20px;
+}
+
+.combo.opened {
+    border-radius: 5px 5px 0px 0px;
+}
+
+.combo.closed {
+    border-radius: 5px;
+}
+
+.combo input {
+    height: 69px;
+    min-width: 170px;
+    padding-left: 15px;
+    padding-right: 60px;
+    color: white;
+    border: 0;
+    outline: 0;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: Lato, sans-serif;
+    background-color: transparent;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.combo .chevron {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 60px;
+    height: 100%;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.combo .chevron i {
+    margin-top: 9px;
+    margin-right: 7px;
+    font-size: 18.5px;
+    color: white;
+}
+
+.ing {
+    background-color: #3282f7;
+}
+
+.combo-menu::-webkit-scrollbar {
+    width: 15px;
+}
+
+
+.combo-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.combo-menu::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+}
+
+.ing .combo-menu::-webkit-scrollbar-thumb {
+    background-color: #38a2e9;
+}
+
+
+.app {
+    background-color: #68d9a4;
+}
+
+.ust {
+    background-color: #ed6454;
+}
+
+
+.ust .combo-menu::-webkit-scrollbar-thumb {
+    background-color: #f08a7e;
+}
+
+.combo-menu {
+    position: absolute;
+    top: 69px;
+    left: 0px;
+    min-width: 170px;
+    background-color: inherit;
+    border-radius: 0px 0px 5px 5px;
+    color: white;
+    padding: 0px 0px 20px 0px;
+    box-sizing: border-box;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.combo.closed .combo-menu {
+    display: none;
+}
+
+.combo.opened .combo-menu {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.combo-menu a {
+    width: 150px;    
+    padding: 0px 20px;
+    cursor: pointer;
+}
+
+.combo-menu a:hover {
+    color: #eee;
+    text-decoration:underline;
 }
