@@ -1,3 +1,5 @@
+
+
 class Combo {
     constructor(placeholder) {
         let combo = document.createElement('div');
@@ -56,18 +58,33 @@ class Combo {
              let a = document.createElement('a');
              a.textContent = ing;
              this._menu.appendChild(a);
-         });*/
+         });*/      
         this._menu.innerHTML = "";
         while (content.forEach((v, k) => {
             let a = document.createElement('a');
             a.textContent = k;
+            a.addEventListener('click', evt => { 
+                let inter = new Set();
+                for (let e of currentSet) {
+                    if (v.includes(e))
+                        inter.add(e);
+                }
+                displaySet(inter);
+                cmbIngredients.content = loadIngredients(inter);
+                cmbIngredients.fillContent(cmbIngredients.content);
+                cmbAppareils.content = loadAppareils(inter);
+                cmbAppareils.fillContent(cmbAppareils.content);
+                cmbUstensiles.content = loadUstensiles(inter);
+                cmbUstensiles.fillContent(cmbUstensiles.content);
+
+            })
             this._menu.appendChild(a);
         }));
     }
 
     search(evt) {
             let map = new Map();
-            while (ingredients.forEach((v, k) => {
+            while (this.content.forEach((v, k) => {
                 if (k.includes(this._input.value.toLowerCase())) {
                     map.set(k, v);
                 }
@@ -78,20 +95,5 @@ class Combo {
 }
 
 
-
-
-let ingredients = loadIngredients();
-let ustensiles = loadUstensiles();
-let appareils = loadAppareils();
-
-let cmbIngredients = new Combo('Ingredients');
-cmbIngredients.resize(600);
-//console.log(ingredients)
-let orderedIng = new Map([...ingredients.entries()].sort());
-cmbIngredients.fillContent(orderedIng);
-let cmbAppareils = new Combo('Appareils');
-cmbAppareils.fillContent(appareils);
-let cmbUstensiles = new Combo("Ustensiles");
-cmbUstensiles.fillContent(ustensiles);
 
 
