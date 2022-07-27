@@ -29,6 +29,8 @@ class Combo {
         this._html = combo;
         this._menu = menu;
         this._input = input;
+        this._chevron = i;
+        this._type = placeholder.toLowerCase();
         this.resize(300);
     }
 
@@ -43,10 +45,12 @@ class Combo {
 
     open() {
         this._html.classList.replace('closed', 'opened');
+        this._chevron.classList.replace('fa-chevron-down', 'fa-chevron-up');
     }
 
     close() {
-        this._html.classList.replace('opened', 'closed')
+        this._html.classList.replace('opened', 'closed');
+        this._chevron.classList.replace('fa-chevron-up', 'fa-chevron-down');
     }
 
     isOpen() {
@@ -54,43 +58,52 @@ class Combo {
     }
 
     fillContent(content) {
-        /* content.forEach(ing => {
-             let a = document.createElement('a');
-             a.textContent = ing;
-             this._menu.appendChild(a);
-         });*/      
         this._menu.innerHTML = "";
         while (content.forEach((v, k) => {
             let a = document.createElement('a');
             a.textContent = k;
-            a.addEventListener('click', evt => { 
+            a.addEventListener('click', (evt => {
                 let inter = new Set();
                 for (let e of currentSet) {
                     if (v.includes(e))
                         inter.add(e);
                 }
-                displaySet(inter);
-                cmbIngredients.content = loadIngredients(inter);
-                cmbIngredients.fillContent(cmbIngredients.content);
-                cmbAppareils.content = loadAppareils(inter);
-                cmbAppareils.fillContent(cmbAppareils.content);
-                cmbUstensiles.content = loadUstensiles(inter);
-                cmbUstensiles.fillContent(cmbUstensiles.content);
+                updateInterfaceWithSet(inter);
+                let tags = document.getElementById("tags");
+                let div = document.createElement('div');
+                switch (this._type) {
+                    case 'ingrédients':
+                        div.classList.add('tag-ing');
+                        break;
+                    case 'appareils':
+                        div.classList.add('tag-app');
+                        break;
+                    case 'ustensiles':
+                        div.classList.add('tag-ust');
+                        break;
 
-            })
+                }
+                let span = document.createElement('span');
+                let i = document.createElement('i');
+                i.setAttribute('class', 'fa-regular fa-circle-xmark');
+                span.textContent = k;
+                div.appendChild(span);
+                div.appendChild(i);
+                tags.appendChild(div);
+            }).bind(this))
             this._menu.appendChild(a);
         }));
     }
 
     search(evt) {
-            let map = new Map();
-            while (this.content.forEach((v, k) => {
-                if (k.includes(this._input.value.toLowerCase())) {
-                    map.set(k, v);
-                }
-            }));
-            this.fillContent(map);
-            if (map.size > 0) this.open();
+        let map = new Map();
+        while (this.content.forEach((v, k) => {
+            if (k.includes(this._input.value.toLowerCase())) {
+                map.set(k, v);
+            }
+        }));
+        this.fillContent(map);
+        if (map.size > 0) this.open();
     }
 }
 

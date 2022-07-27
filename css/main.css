@@ -24,7 +24,8 @@ body {
     display: flex;
 }
 
-.search i {
+.chevron i,
+.search>div:first-child i {
     position: absolute;
     top: 18px;
     right: 15px;
@@ -272,4 +273,45 @@ body {
 .combo-menu a:hover {
     color: #eee;
     text-decoration:underline;
+}
+
+#tags {
+    margin-top: 25px;
+    margin-bottom: 15px;   
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#tags div {
+    display: flex;
+    align-items: center;   
+ 
+    color: white;
+    border-radius: 5px;
+    padding: 10px 10px 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;    
+}
+
+.tag-ing {
+    background-color: #3282f7;
+}
+
+.tag-app {
+    background-color:  #68d9a4;
+}
+
+.tag-ust {
+    background-color: #ed6454;
+}
+
+#tags i {
+    margin-left: 15px;
+    font-size: 20px;
+    font-weight: 400;
+    color: white;
+    cursor: pointer;
+    width: 40px;
+    text-align: center;
 }

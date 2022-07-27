@@ -1,4 +1,4 @@
-let cmbIngredients = new Combo('Ingredients');
+let cmbIngredients = new Combo('Ingrédients');
 let cmbAppareils = new Combo('Appareils');
 let cmbUstensiles = new Combo("Ustensiles");
 
@@ -7,33 +7,15 @@ let ustensiles = loadUstensiles();
 let appareils = loadAppareils();
 
 cmbIngredients.resize(600);
-//console.log(ingredients)
-let orderedIng = new Map([...ingredients.entries()].sort());
+//let orderedIng = new Map([...ingredients.entries()].sort());
 
-cmbIngredients.content = orderedIng;
-cmbIngredients.fillContent(orderedIng);
-cmbAppareils.content = appareils;
-cmbAppareils.fillContent(appareils);
-cmbUstensiles.content = ustensiles;
-cmbUstensiles.fillContent(ustensiles);
+let currentSet = new Set(); // le set des recettes correspondant à la recherche en cours
+recipes.forEach(recette => currentSet.add(recette.id));
 
+updateInterfaceWithSet(currentSet);
 
-/*
-function loadIngredients() {
-    const ingredients = new Map();
-    recipes.forEach(recette => {
-        recette.ingredients.forEach(ing => {
-            let recipesTab = ingredients.get(ing.ingredient.toLowerCase())
-            if (!recipesTab) {
-                recipesTab = [];
-                ingredients.set(ing.ingredient.toLowerCase(), recipesTab)
-            }
-            recipesTab.push(recette.id);
-        });
-    });
-    return ingredients;
-}
-*/
+let searchBar = document.getElementById("search-bar");
+searchBar.addEventListener("input", search);
 
 function loadIngredients(set) {
     const ingredients = new Map();
@@ -52,23 +34,6 @@ function loadIngredients(set) {
     return ingredients;
 }
 
-/*
-function loadUstensiles() {
-    const ustensiles = new Map();
-    recipes.forEach(recette => {
-        recette.ustensils.forEach(u => {
-            let recipesTab = ustensiles.get(u)
-            if (!recipesTab) {
-                recipesTab = [];
-                ustensiles.set(u, recipesTab)
-            }
-            recipesTab.push(recette.id);
-        });
-    });
-    return ustensiles;
-}*/
-
-
 function loadUstensiles(set) {
     const ustensiles = new Map();
     recipes.forEach(recette => {
@@ -85,21 +50,6 @@ function loadUstensiles(set) {
     });
     return ustensiles;
 }
-
-/*
-function loadAppareils() {
-    const appareils = new Map();
-    recipes.forEach(recette => {
-        let recipesTab = appareils.get(recette.appliance)
-        if (!recipesTab) {
-            recipesTab = [];
-            appareils.set(recette.appliance, recipesTab)
-        }
-        recipesTab.push(recette.id);
-    });
-    return appareils;
-}
-*/
 
 function loadAppareils(set) {
     const appareils = new Map();
@@ -164,15 +114,7 @@ function search(evt) {
                 inter.add(e);
         }
 
-        displaySet(inter);
-        cmbIngredients.content = loadIngredients(inter);
-        cmbIngredients.fillContent(cmbIngredients.content);
-
-        cmbAppareils.content = loadAppareils(inter);
-        cmbAppareils.fillContent(cmbAppareils.content);
-
-        cmbUstensiles.content = loadUstensiles(inter);
-        cmbUstensiles.fillContent(cmbUstensiles.content);
+        updateInterfaceWithSet(inter);
     }
 
     if (words.length === 0) {
@@ -195,17 +137,19 @@ function displaySet(set) {
     });
 }
 
+function updateInterfaceWithSet(set) {
+    displaySet(set);
+    cmbIngredients.content = loadIngredients(set);
+    cmbIngredients.fillContent(cmbIngredients.content);
 
-let currentSet = new Set(); // le set des recettes correspondant à la recherche en cours
-recipes.forEach(recette => currentSet.add(recette.id));
-displaySet(currentSet);
+    cmbAppareils.content = loadAppareils(set);
+    cmbAppareils.fillContent(cmbAppareils.content);
 
-let searchBar = document.getElementById("search-bar");
-searchBar.addEventListener("input", search);
+    cmbUstensiles.content = loadUstensiles(set);
+    cmbUstensiles.fillContent(cmbUstensiles.content);
+}
 
 
-//console.log(ustensiles);
-//console.log(appareils);
 
 
 
