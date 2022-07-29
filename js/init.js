@@ -115,12 +115,23 @@ function search(evt) {
         }
         globalSearchSet = inter;
         updateInterfaceWithSet(inter);
-    } else {
-        console.log("aucun résultat")
-    }
+        let noresults = document.getElementById('noresults');
+        if (inter.size === 0) {
+            noresults.style.display = 'block';
+            noresults.textContent = "Aucune recette ne correspond à votre critère... vous pouvez\
+        chercher « tarte aux pommes », « poisson », etc."
+        } else {
+            noresults.style.display = 'none';
+        }
+    } /*else {
+        console.log("no results")
+        if (words[0] && words[0].length > 2) {
+            document.getElementById('noresults').textContent = "Aucune recette ne correspond à votre critère... vous pouvez\
+        chercher « tarte aux pommes », « poisson », etc."
+        }
+    }*/
 
     if (words.length === 0) {
-        console.log("should update globalSearchSet")
         globalSearchSet = new Set(allRecipesSet);
         currentSet = new Set(globalSearchSet);
         let recipesSection = document.querySelector(".recipes");
@@ -128,7 +139,7 @@ function search(evt) {
         cmbIngredients.fillContent(ingredients);
         cmbAppareils.fillContent(appareils);
         cmbUstensiles.fillContent(ustensiles);
-    } 
+    }
 
 }
 

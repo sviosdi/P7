@@ -81,11 +81,13 @@ body {
     margin: 20px;
     font-weight: 400;
     font-size: 18px;
+    max-width: 235px;
 }
 
 .recette span {
     font-weight: 700;
     margin-right: 20px;
+    white-space: nowrap;
 }
 
 .recette i {
@@ -313,4 +315,8 @@ body {
     cursor: pointer;
     width: 40px;
     text-align: center;
+}
+
+#noresults {
+    margin-top: 50px;
 }
