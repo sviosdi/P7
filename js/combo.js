@@ -63,6 +63,10 @@ class Combo {
             let a = document.createElement('a');
             a.textContent = k;
             a.addEventListener('click', (evt => {
+                // exemple : si 'click' sur k = 'tomate' => v = [2, 4 ,5, 16, 24, 26]
+                //           il ne faut alors afficher que les recettes dont l'id. est à la fois
+                //           dans v et dans le currentSet (recettes actuellements affichées)
+                //           Il faut donc afficher v ∩ currentSet                                
                 let inter = new Set();
                 for (let e of currentSet) {
                     if (v.includes(e))
@@ -71,18 +75,9 @@ class Combo {
                 updateInterfaceWithSet(inter);
                 let tags = document.getElementById("tags");
                 let div = document.createElement('div');
-                switch (this._type) {
-                    case 'ingrédients':
-                        div.classList.add('tag-ing');
-                        break;
-                    case 'appareils':
-                        div.classList.add('tag-app');
-                        break;
-                    case 'ustensiles':
-                        div.classList.add('tag-ust');
-                        break;
-
-                }
+                div.classList.add(`tag-${this._type.slice(0, 3)}`);
+                currentTags[this._type].push(k);
+                //console.log(currentTags);
                 let span = document.createElement('span');
                 let i = document.createElement('i');
                 i.setAttribute('class', 'fa-regular fa-circle-xmark');
@@ -90,6 +85,32 @@ class Combo {
                 div.appendChild(span);
                 div.appendChild(i);
                 tags.appendChild(div);
+                i.addEventListener('click', evt => {
+                    currentTags[this._type].splice(currentTags[this._type].indexOf(k), 1);
+                    div.remove();
+                    //console.log(globalSearchSet)
+                    //console.log(currentTags)
+                    // console.log(loadIngredients(globalSearchSet).get(currentTags['ingrédients'][0]))
+                    // exemple : on supprime le tag k = 'tomate' => v = [2, 4 ,5, 16, 24, 26]
+
+                    //updateInterfaceWithSet(currentSet);
+                    let results = [];
+
+                    let ing = loadIngredients(globalSearchSet);
+                    currentTags['ingrédients'].forEach(tag => {
+                        results.push(ing.get(tag));
+                    })
+                    let app = loadAppareils(globalSearchSet);
+                    currentTags['appareils'].forEach(tag => {
+                        results.push(app.get(tag));
+                    })
+                    let ust = loadUstensiles(globalSearchSet);
+                    currentTags['ustensiles'].forEach(tag => {
+                        results.push(ust.get(tag));
+                    })
+
+                    updateInterfaceWithSet(new Set((intersectMulti(results))));
+                });
             }).bind(this))
             this._menu.appendChild(a);
         }));
@@ -105,6 +126,22 @@ class Combo {
         this.fillContent(map);
         if (map.size > 0) this.open();
     }
+}
+
+function intersectMulti(arrays) {
+    if (arrays.length === 0) return [];
+    if (arrays.length === 1) return arrays[0];
+    return arrays.reduce((prev, cur) => intersect2(prev, cur), arrays[0])
+
+}
+
+function intersect2(array1, array2) {
+    if (array1 === array2) return array1;
+    let inter = [];
+    array1.forEach(v => {
+        if (array2.includes(v)) inter.push(v);
+    })
+    return inter;
 }
 
 

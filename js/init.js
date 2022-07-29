@@ -5,14 +5,16 @@ let cmbUstensiles = new Combo("Ustensiles");
 let ingredients = loadIngredients();
 let ustensiles = loadUstensiles();
 let appareils = loadAppareils();
-
 cmbIngredients.resize(600);
 //let orderedIng = new Map([...ingredients.entries()].sort());
 
-let currentSet = new Set(); // le set des recettes correspondant à la recherche en cours
-recipes.forEach(recette => currentSet.add(recette.id));
+let globalSearchSet = new Set(); // le set des recettes correspondant à la recherche en cours
+recipes.forEach(recette => globalSearchSet.add(recette.id));
 
-updateInterfaceWithSet(currentSet);
+let currentSet = new Set(globalSearchSet);
+let currentTags = { 'ingrédients': [], 'appareils': [], 'ustensiles': [] };
+
+updateInterfaceWithSet(globalSearchSet);
 
 let searchBar = document.getElementById("search-bar");
 searchBar.addEventListener("input", search);
@@ -39,10 +41,10 @@ function loadUstensiles(set) {
     recipes.forEach(recette => {
         if (!set || set.has(recette.id)) {
             recette.ustensils.forEach(u => {
-                let recipesTab = ustensiles.get(u)
+                let recipesTab = ustensiles.get(u.toLowerCase())
                 if (!recipesTab) {
                     recipesTab = [];
-                    ustensiles.set(u, recipesTab)
+                    ustensiles.set(u.toLowerCase(), recipesTab)
                 }
                 recipesTab.push(recette.id);
             });
@@ -55,7 +57,7 @@ function loadAppareils(set) {
     const appareils = new Map();
     recipes.forEach(recette => {
         if (!set || set.has(recette.id)) {
-            let recipesTab = appareils.get(recette.appliance)
+            let recipesTab = appareils.get(recette.appliance.toLowerCase());
             if (!recipesTab) {
                 recipesTab = [];
                 appareils.set(recette.appliance.toLowerCase(), recipesTab)
@@ -73,18 +75,16 @@ function search(evt) {
     let searchString = evt.target.value.toLowerCase();
     let words = searchString.split(' ').filter(v => v != '');
 
-
     let results = [];
-
 
     words.forEach((word, idx) => {
         if ((idx === 0 && word.length > 2) || idx > 0) {
             let set = new Set();
-            while (ingredients.forEach((v, k) => {
+            ingredients.forEach((v, k) => {
                 if (k.includes(word)) {
                     v.forEach(i => set.add(i));
                 }
-            }));
+            });
 
             recipes.forEach(recette => {
                 if (recette.name.toLowerCase().includes(word)) {
@@ -128,7 +128,6 @@ function search(evt) {
 }
 
 function displaySet(set) {
-    currentSet = set;
     let recipesSection = document.querySelector(".recipes");
     recipesSection.innerHTML = "";
     recipes.forEach(recette => {
@@ -138,14 +137,16 @@ function displaySet(set) {
 }
 
 function updateInterfaceWithSet(set) {
-    displaySet(set);
-    cmbIngredients.content = loadIngredients(set);
+    if (set.size === 0) currentSet = globalSearchSet;
+    else currentSet = set;
+    displaySet(currentSet);
+    cmbIngredients.content = loadIngredients(currentSet);
     cmbIngredients.fillContent(cmbIngredients.content);
 
-    cmbAppareils.content = loadAppareils(set);
+    cmbAppareils.content = loadAppareils(currentSet);
     cmbAppareils.fillContent(cmbAppareils.content);
 
-    cmbUstensiles.content = loadUstensiles(set);
+    cmbUstensiles.content = loadUstensiles(currentSet);
     cmbUstensiles.fillContent(cmbUstensiles.content);
 }
 

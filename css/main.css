@@ -284,14 +284,13 @@ body {
 
 #tags div {
     display: flex;
-    align-items: center;   
- 
+    align-items:center;   
+    height: 40px;
     color: white;
     border-radius: 5px;
-    padding: 10px 10px 10px 20px;
+    padding: 0px 10px 0px 20px;
     font-size: 14px;
     font-weight: 700;
-    line-height: 20px;    
 }
 
 .tag-ing {
