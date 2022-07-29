@@ -10,7 +10,7 @@ cmbIngredients.resize(600);
 
 let globalSearchSet = new Set(); // le set des recettes correspondant à la recherche en cours
 recipes.forEach(recette => globalSearchSet.add(recette.id));
-
+const allRecipesSet = new Set(globalSearchSet);
 let currentSet = new Set(globalSearchSet);
 let currentTags = { 'ingrédients': [], 'appareils': [], 'ustensiles': [] };
 
@@ -113,17 +113,22 @@ function search(evt) {
             if (found)
                 inter.add(e);
         }
-
+        globalSearchSet = inter;
         updateInterfaceWithSet(inter);
+    } else {
+        console.log("aucun résultat")
     }
 
     if (words.length === 0) {
+        console.log("should update globalSearchSet")
+        globalSearchSet = new Set(allRecipesSet);
+        currentSet = new Set(globalSearchSet);
         let recipesSection = document.querySelector(".recipes");
         recipes.forEach(recette => recipesSection.appendChild(new Card(recette).html));
         cmbIngredients.fillContent(ingredients);
         cmbAppareils.fillContent(appareils);
         cmbUstensiles.fillContent(ustensiles);
-    }
+    } 
 
 }
 
