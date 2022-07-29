@@ -57,27 +57,21 @@ class Combo {
         return this._html.classList.contains('opened');
     }
 
+    /* content : Map dont les clés (ingrédients, appareils ou ustensiles) ont pour valeur associée le tableau
+                 des seuls id. de recettes actuellement affichées. 
+                 Cette fonction remplit le menu du combo et gère le 'click' sur chacun des éléments qui le remplissent.
+    */
     fillContent(content) {
         this._menu.innerHTML = "";
         while (content.forEach((v, k) => {
             let a = document.createElement('a');
             a.textContent = k;
             a.addEventListener('click', (evt => {
-                // exemple : si 'click' sur k = 'tomate' => v = [2, 4 ,5, 16, 24, 26]
-                //           il ne faut alors afficher que les recettes dont l'id. est à la fois
-                //           dans v et dans le currentSet (recettes actuellements affichées)
-                //           Il faut donc afficher v ∩ currentSet                                
-                let inter = new Set();
-                for (let e of currentSet) {
-                    if (v.includes(e))
-                        inter.add(e);
-                }
-                updateInterfaceWithSet(inter);
+                updateInterfaceWithSet(new Set(v));
                 let tags = document.getElementById("tags");
                 let div = document.createElement('div');
                 div.classList.add(`tag-${this._type.slice(0, 3)}`);
                 currentTags[this._type].push(k);
-                //console.log(currentTags);
                 let span = document.createElement('span');
                 let i = document.createElement('i');
                 i.setAttribute('class', 'fa-regular fa-circle-xmark');

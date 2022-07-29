@@ -123,13 +123,7 @@ function search(evt) {
         } else {
             noresults.style.display = 'none';
         }
-    } /*else {
-        console.log("no results")
-        if (words[0] && words[0].length > 2) {
-            document.getElementById('noresults').textContent = "Aucune recette ne correspond à votre critère... vous pouvez\
-        chercher « tarte aux pommes », « poisson », etc."
-        }
-    }*/
+    } 
 
     if (words.length === 0) {
         globalSearchSet = new Set(allRecipesSet);
