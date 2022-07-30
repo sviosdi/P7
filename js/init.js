@@ -2,69 +2,77 @@ let cmbIngredients = new Combo('Ingrédients');
 let cmbAppareils = new Combo('Appareils');
 let cmbUstensiles = new Combo("Ustensiles");
 
+
+
+let globalSearchSet = new Set(); // le set des recettes correspondant à la recherche en cours
+recipes.forEach(recette => globalSearchSet.add(recette.id));
+const allRecipesSet = new Set(globalSearchSet);
+let currentSet = new Set(allRecipesSet);
+let currentTags = { 'ingrédients': [], 'appareils': [], 'ustensiles': [] };
+
 let ingredients = loadIngredients();
 let ustensiles = loadUstensiles();
 let appareils = loadAppareils();
 cmbIngredients.resize(600);
 //let orderedIng = new Map([...ingredients.entries()].sort());
 
-let globalSearchSet = new Set(); // le set des recettes correspondant à la recherche en cours
-recipes.forEach(recette => globalSearchSet.add(recette.id));
-const allRecipesSet = new Set(globalSearchSet);
-let currentSet = new Set(globalSearchSet);
-let currentTags = { 'ingrédients': [], 'appareils': [], 'ustensiles': [] };
-
-updateInterfaceWithSet(globalSearchSet);
+cmbIngredients.content = ingredients;
+cmbIngredients.fillContent(cmbIngredients.content);
+cmbAppareils.content = appareils;
+cmbAppareils.fillContent(cmbAppareils.content);
+cmbUstensiles.content = ustensiles;
+cmbUstensiles.fillContent(cmbUstensiles.content);
+displaySet(currentSet);
 
 let searchBar = document.getElementById("search-bar");
 searchBar.addEventListener("input", search);
 
 function loadIngredients(set) {
+    if (!set) set = allRecipesSet;
     const ingredients = new Map();
-    recipes.forEach(recette => {
-        if (!set || set.has(recette.id)) {
-            recette.ingredients.forEach(ing => {
-                let recipesTab = ingredients.get(ing.ingredient.toLowerCase())
-                if (!recipesTab) {
-                    recipesTab = [];
-                    ingredients.set(ing.ingredient.toLowerCase(), recipesTab)
-                }
-                recipesTab.push(recette.id);
-            });
-        }
-    });
+    for (let r_id of set) {
+        let recette = recipes[r_id - 1];
+        recette.ingredients.forEach(ing => {
+            let recipesTab = ingredients.get(ing.ingredient.toLowerCase())
+            if (!recipesTab) {
+                recipesTab = [];
+                ingredients.set(ing.ingredient.toLowerCase(), recipesTab)
+            }
+            recipesTab.push(recette.id);
+        });
+    }
     return ingredients;
 }
 
 function loadUstensiles(set) {
+    if (!set) set = allRecipesSet;
     const ustensiles = new Map();
-    recipes.forEach(recette => {
-        if (!set || set.has(recette.id)) {
-            recette.ustensils.forEach(u => {
-                let recipesTab = ustensiles.get(u.toLowerCase())
-                if (!recipesTab) {
-                    recipesTab = [];
-                    ustensiles.set(u.toLowerCase(), recipesTab)
-                }
-                recipesTab.push(recette.id);
-            });
-        }
-    });
+    for (let r_id of set) {
+        let recette = recipes[r_id - 1];
+        recette.ustensils.forEach(u => {
+            let recipesTab = ustensiles.get(u.toLowerCase())
+            if (!recipesTab) {
+                recipesTab = [];
+                ustensiles.set(u.toLowerCase(), recipesTab)
+            }
+            recipesTab.push(recette.id);
+        });
+    }
     return ustensiles;
 }
 
 function loadAppareils(set) {
+    if (!set) set = allRecipesSet;
     const appareils = new Map();
-    recipes.forEach(recette => {
-        if (!set || set.has(recette.id)) {
-            let recipesTab = appareils.get(recette.appliance.toLowerCase());
+    for (let r_id of set) {
+        let recette = recipes[r_id - 1];
+        let recipesTab = appareils.get(recette.appliance.toLowerCase());
             if (!recipesTab) {
                 recipesTab = [];
                 appareils.set(recette.appliance.toLowerCase(), recipesTab)
             }
             recipesTab.push(recette.id);
-        }
-    });
+    }
     return appareils;
 }
 
@@ -140,10 +148,9 @@ function search(evt) {
 function displaySet(set) {
     let recipesSection = document.querySelector(".recipes");
     recipesSection.innerHTML = "";
-    recipes.forEach(recette => {
-        if (set.has(recette.id))
-            recipesSection.appendChild(new Card(recette).html)
-    });
+    for (let id of set) {
+        recipesSection.appendChild(new Card(recipes[id - 1]).html);
+    }
 }
 
 function updateInterfaceWithSet(set) {
