@@ -8,6 +8,7 @@ let globalSearchSet = new Set(); // le set des recettes correspondant à la rech
 recipes.forEach(recette => globalSearchSet.add(recette.id));
 const allRecipesSet = new Set(globalSearchSet);
 let currentSet = new Set(allRecipesSet);
+let resultSet = new Set();
 let currentTags = { 'ingrédients': [], 'appareils': [], 'ustensiles': [] };
 
 let ingredients = loadIngredients();
@@ -67,11 +68,11 @@ function loadAppareils(set) {
     for (let r_id of set) {
         let recette = recipes[r_id - 1];
         let recipesTab = appareils.get(recette.appliance.toLowerCase());
-            if (!recipesTab) {
-                recipesTab = [];
-                appareils.set(recette.appliance.toLowerCase(), recipesTab)
-            }
-            recipesTab.push(recette.id);
+        if (!recipesTab) {
+            recipesTab = [];
+            appareils.set(recette.appliance.toLowerCase(), recipesTab)
+        }
+        recipesTab.push(recette.id);
     }
     return appareils;
 }
@@ -81,73 +82,84 @@ let resultMap = new Map();
 
 /* Fonction de recherche principale */
 function search(evt) {
+    currentSet.clear();
     let searchString = evt.target.value.toLowerCase();
+
     let words = searchString.split(' ').filter(v => v != '');
 
-    let results = [];
-    /* algorithme initial : pour chacun des mots, pour chacune des recettes... et recherche dans les clé des ingrédients et
-                            non dans les ingrédients de la recette eux-mêmes.
-       inconvénients : obligation de filtrer toutes les recettes avant d'afficher les résultats.
-                       il faut calculer l'intersection des résultats séparément.
-                            */
-    words.forEach((word, idx) => {
-        /* si ingredients : '{lait de coco' => [1, 2, 3]}, { .... }, ..
-        si word = 'coc' trouvé dans 'lait de coco' alors ajout au set des id. 1, 2 et 3 des recettes correspondantes; */
-        if ((idx === 0 && word.length > 2) || idx > 0) {
-            let set = new Set();
-            ingredients.forEach((v, k) => {
-                if (k.includes(word)) {
-                    v.forEach(i => set.add(i));
-                }
-            });
+    for (let i = 0; i < recipes.length; i++) {
+        let allWordsFoundInRecipe = true;
+        let j;
+        for (j = 0; j < words.length; j++) {
+            if ((j === 0 && words[j].length > 2) || j > 0) {
+                let ings = recipes[i].ingredients;
+                let foundIfIngredients = 0;
+                for (let k = 0; k < ings.length; k++) {
+                    if (ings[k].ingredient.includes(words[j])) {
+                        found = 1;
+                        // le j-ème mot de la recherche principale est trouvé dans un des ingrédients
+                        // de la recette, inutile de le rechercher dans les ingrédients suivants
+                        // quitter le parcours des ingrédients et passer à la suite
+                        break; // sur k (les ingrédients)
+                    }
+                };
 
-            /* pour chacune des recettes : bouche 'for' car pas de possibilité  
-               de stopper une boucle 'forEach' par continue ou break; */
-            for (let i = 0; i < recipes.length; i++) {
-                /* si 'coc' est trouvé dans le titre de la recette, 'Poulet coco réunionnais" par ex.
-                   ajouter alors l'id. de la recette au set. */
-                if (recipes[i].name.toLowerCase().includes(word)) {
-                    set.add(recipes[i].id); 
-                    // inutile de rechercher dans la description, la recette étant déjà ajoutée au set.
-                    continue; 
-                }
-                /* recherche dans la description de la recette */
-                if (recipes[i].description.toLowerCase().includes(word)) {
-                    set.add(recipes[i].id);
+                if (foundIfIngredients) {
+                    // le j-ème mot de la recherche principale a été trouvé dans les ingrédients, inutile de
+                    // le rechercher dans le titre ou dans la description
+                    // marquer le mot comme trouvé et passer au mot suivant                        
+                    continue; // sur j (les mots)
                 }
 
+                // continuer la recherche dans le titre
+
+                if (recipes[i].name.toLowerCase().includes(words[j])) {
+                    // le j-ème mot de la recherche principale a été trouvé dans le titre inutile de
+                    // le rechercher dans la description
+                    // marquer le mot comme trouvé et passer au mot suivant
+                    // results[j] = 1;                
+                    continue; // sur j (les mots)
+                }
+
+                // continuer la recherche dans la description
+
+                if (recipes[i].description.toLowerCase().includes(words[j])) {
+                    // le j-ème mot de la recherche principale a été trouvé dans la description
+                    // marquer le mot comme trouvé et passer au mot suivant
+                    // results[j] = 1;                    
+                    continue; // sur j (les mots)
+                }
+
+                // le j-ème mot de la recherche principale n'a pas été trouvé dans la recette
+                allWordsFoundInRecipe = false;
+                break; // sur j (les mots)
             }
-            results.push(set);
         }
-    });
+        // si tous les mots ont été parcourus et trouvés dans la recette (allWordsFoundInRecipe n'a pas 
+        // été mis à false lors du parcours d'un des mots  <=> recherche positive: afficher la recette 
+        if (words.length !== 0 && words[0].length > 2 && j === words.length && allWordsFoundInRecipe) {
+            addToInterface(recipes[i].id);
+        } 
 
-    if (results.length > 0) {
-        let inter = new Set();
-        for (let e of results[0]) {
-            let found = true;
-            for (let i = 1; i < results.length; i++) {
-                if (!results[i].has(e)) {
-                    found = false;
-                    break;
-                }
-            }
-            if (found)
-                inter.add(e);
-        }
+    };
+
+    if (words.length !== 0 && words[0].length > 2)
+        globalSearchSet = new Set(resultSet);
+    //updateInterfaceWithSet(globalSearchSet);
+
+    if (globalSearchSet.size === 0) {
+        document.querySelector(".recipes").innerHTML = "";
         
-        globalSearchSet = inter;
-        updateInterfaceWithSet(inter);
-        let noresults = document.getElementById('noresults');
-        if (inter.size === 0) {
-            noresults.style.display = 'block';
-            noresults.textContent = "Aucune recette ne correspond à votre critère... vous pouvez\
-        chercher « tarte aux pommes », « poisson », etc."
-        } else {
-            noresults.style.display = 'none';
-        }
-    } 
+        noresults.style.display = 'block';
+        noresults.textContent = "Aucune recette ne correspond à votre critère... vous pouvez\
+    chercher « tarte aux pommes », « poisson », etc."
+    } else {
+        noresults.style.display = 'none';
+    }
 
     if (words.length === 0) {
+        let noresults = document.getElementById('noresults');
+        noresults.style.display = 'none';
         globalSearchSet = new Set(allRecipesSet);
         currentSet = new Set(globalSearchSet);
         let recipesSection = document.querySelector(".recipes");
@@ -181,7 +193,23 @@ function updateInterfaceWithSet(set) {
     cmbUstensiles.fillContent(cmbUstensiles.content);
 }
 
+function addToInterface(recetteId) {
+    let recipesSection = document.querySelector(".recipes");
+    if (resultSet.size === 0) {
+        recipesSection.innerHTML = "";
+        currentSet = resultSet;
+    }
+    currentSet.add(recetteId);
+    recipesSection.appendChild(new Card(recipes[recetteId - 1]).html);
+    cmbIngredients.content = loadIngredients(currentSet);
+    cmbIngredients.fillContent(cmbIngredients.content);
 
+    cmbAppareils.content = loadAppareils(currentSet);
+    cmbAppareils.fillContent(cmbAppareils.content);
+
+    cmbUstensiles.content = loadUstensiles(currentSet);
+    cmbUstensiles.fillContent(cmbUstensiles.content);
+}
 
 
 
