@@ -79,13 +79,20 @@ function loadAppareils(set) {
 
 let resultMap = new Map();
 
+/* Fonction de recherche principale */
 function search(evt) {
     let searchString = evt.target.value.toLowerCase();
     let words = searchString.split(' ').filter(v => v != '');
 
     let results = [];
-
+    /* algorithme initial : pour chacun des mots, pour chacune des recettes... et recherche dans les clé des ingrédients et
+                            non dans les ingrédients de la recette eux-mêmes.
+       inconvénients : obligation de filtrer toutes les recettes avant d'afficher les résultats.
+                       il faut calculer l'intersection des résultats séparément.
+                            */
     words.forEach((word, idx) => {
+        /* si ingredients : '{lait de coco' => [1, 2, 3]}, { .... }, ..
+        si word = 'coc' trouvé dans 'lait de coco' alors ajout au set des id. 1, 2 et 3 des recettes correspondantes; */
         if ((idx === 0 && word.length > 2) || idx > 0) {
             let set = new Set();
             ingredients.forEach((v, k) => {
@@ -94,16 +101,22 @@ function search(evt) {
                 }
             });
 
-            recipes.forEach(recette => {
-                if (recette.name.toLowerCase().includes(word)) {
-                    set.add(recette.id);
+            /* pour chacune des recettes : bouche 'for' car pas de possibilité  
+               de stopper une boucle 'forEach' par continue ou break; */
+            for (let i = 0; i < recipes.length; i++) {
+                /* si 'coc' est trouvé dans le titre de la recette, 'Poulet coco réunionnais" par ex.
+                   ajouter alors l'id. de la recette au set. */
+                if (recipes[i].name.toLowerCase().includes(word)) {
+                    set.add(recipes[i].id); 
+                    // inutile de rechercher dans la description, la recette étant déjà ajoutée au set.
+                    continue; 
+                }
+                /* recherche dans la description de la recette */
+                if (recipes[i].description.toLowerCase().includes(word)) {
+                    set.add(recipes[i].id);
                 }
 
-                if (recette.description.toLowerCase().includes(word)) {
-                    set.add(recette.id);
-                }
-            });
-
+            }
             results.push(set);
         }
     });
@@ -121,6 +134,7 @@ function search(evt) {
             if (found)
                 inter.add(e);
         }
+        
         globalSearchSet = inter;
         updateInterfaceWithSet(inter);
         let noresults = document.getElementById('noresults');
