@@ -57,6 +57,10 @@ class Combo {
         return this._html.classList.contains('opened');
     }
 
+    clear() {
+        this._menu.innerHTML = "";
+    }
+
     /* content : Map dont les clés (ingrédients, appareils ou ustensiles) ont pour valeur associée le tableau
                  des seuls id. de recettes actuellement affichées. 
                  Cette fonction remplit le menu du combo et gère le 'click' sur chacun des éléments qui le remplissent.
@@ -90,15 +94,15 @@ class Combo {
                     //updateInterfaceWithSet(currentSet);
                     let results = [];
 
-                    let ing = loadIngredients(globalSearchSet);
+                    let ing = loadIngredients(principalSearchSet);
                     currentTags['ingrédients'].forEach(tag => {
                         results.push(ing.get(tag));
                     })
-                    let app = loadAppareils(globalSearchSet);
+                    let app = loadAppareils(principalSearchSet);
                     currentTags['appareils'].forEach(tag => {
                         results.push(app.get(tag));
                     })
-                    let ust = loadUstensiles(globalSearchSet);
+                    let ust = loadUstensiles(principalSearchSet);
                     currentTags['ustensiles'].forEach(tag => {
                         results.push(ust.get(tag));
                     })

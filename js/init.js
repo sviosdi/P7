@@ -2,12 +2,12 @@ let cmbIngredients = new Combo('Ingrédients');
 let cmbAppareils = new Combo('Appareils');
 let cmbUstensiles = new Combo("Ustensiles");
 
+let allRecipesSet = new Set(); // le set de l'ensemble des 50 recettes.
+recipes.forEach(recette => allRecipesSet.add(recette.id));
 
-
-let globalSearchSet = new Set(); // le set des recettes correspondant à la recherche en cours
-recipes.forEach(recette => globalSearchSet.add(recette.id));
-const allRecipesSet = new Set(globalSearchSet);
-let currentSet = new Set(allRecipesSet);
+let principalSearchSet = new Set(allRecipesSet); // le set des recettes correspondant à la recherche principale en cours.
+// au départ, on affiche toutes les recettes
+let currentSet = new Set(allRecipesSet); // le set du résultat de la recherche principale filtrée par l'ajout des tags.
 let resultSet = new Set();
 let currentTags = { 'ingrédients': [], 'appareils': [], 'ustensiles': [] };
 
@@ -17,13 +17,7 @@ let appareils = loadAppareils();
 cmbIngredients.resize(600);
 //let orderedIng = new Map([...ingredients.entries()].sort());
 
-cmbIngredients.content = ingredients;
-cmbIngredients.fillContent(cmbIngredients.content);
-cmbAppareils.content = appareils;
-cmbAppareils.fillContent(cmbAppareils.content);
-cmbUstensiles.content = ustensiles;
-cmbUstensiles.fillContent(cmbUstensiles.content);
-displaySet(currentSet);
+updateInterfaceWithSet(allRecipesSet);
 
 let searchBar = document.getElementById("search-bar");
 searchBar.addEventListener("input", search);
@@ -77,26 +71,32 @@ function loadAppareils(set) {
     return appareils;
 }
 
-
-let resultMap = new Map();
-
 /* Fonction de recherche principale */
 function search(evt) {
-    currentSet.clear();
-    let searchString = evt.target.value.toLowerCase();
 
+    let searchString = evt.target.value.toLowerCase();
     let words = searchString.split(' ').filter(v => v != '');
 
-    for (let i = 0; i < recipes.length; i++) {
-        let allWordsFoundInRecipe = true;
-        let j;
-        for (j = 0; j < words.length; j++) {
-            if ((j === 0 && words[j].length > 2) || j > 0) {
+    if (words.length === 0) {
+        let noresults = document.getElementById('noresults');
+        noresults.style.display = 'none';
+        principalSearchSet = new Set(allRecipesSet);  
+        updateInterfaceWithSet(principalSearchSet);
+    } else if (words[0].length > 2) {
+        principalSearchSet.clear();
+        let recipesSection = document.querySelector(".recipes");
+        recipesSection.innerHTML = "";
+         
+        for (let i = 0; i < recipes.length; i++) {
+            let allWordsFoundInRecipe = true;
+            let j;
+            for (j = 0; j < words.length; j++) {
+                // if ((j === 0 && words[j].length > 2) || j > 0) {
                 let ings = recipes[i].ingredients;
                 let foundIfIngredients = 0;
                 for (let k = 0; k < ings.length; k++) {
-                    if (ings[k].ingredient.includes(words[j])) {
-                        found = 1;
+                    if (ings[k].ingredient.toLowerCase().includes(words[j])) {
+                        foundIfIngredients = 1;
                         // le j-ème mot de la recherche principale est trouvé dans un des ingrédients
                         // de la recette, inutile de le rechercher dans les ingrédients suivants
                         // quitter le parcours des ingrédients et passer à la suite
@@ -116,8 +116,7 @@ function search(evt) {
                 if (recipes[i].name.toLowerCase().includes(words[j])) {
                     // le j-ème mot de la recherche principale a été trouvé dans le titre inutile de
                     // le rechercher dans la description
-                    // marquer le mot comme trouvé et passer au mot suivant
-                    // results[j] = 1;                
+                    // marquer le mot comme trouvé et passer au mot suivant               
                     continue; // sur j (les mots)
                 }
 
@@ -125,50 +124,36 @@ function search(evt) {
 
                 if (recipes[i].description.toLowerCase().includes(words[j])) {
                     // le j-ème mot de la recherche principale a été trouvé dans la description
-                    // marquer le mot comme trouvé et passer au mot suivant
-                    // results[j] = 1;                    
+                    // marquer le mot comme trouvé et passer au mot suivant                                     
                     continue; // sur j (les mots)
                 }
 
                 // le j-ème mot de la recherche principale n'a pas été trouvé dans la recette
                 allWordsFoundInRecipe = false;
                 break; // sur j (les mots)
+                //}
             }
+            // si tous les mots ont été parcourus et trouvés dans la recette (allWordsFoundInRecipe n'a pas 
+            // été mis à false lors du parcours d'un des mots  <=> recherche positive: afficher la recette 
+            if (words.length !== 0 && words[0].length > 2 && j === words.length && allWordsFoundInRecipe) {   
+                principalSearchSet.add(recipes[i].id);
+                addToInterface(recipes[i].id);
+            }
+        };
+        // toutes les recettes ont été parcourues et les cards 'positives' affichées
+       
+
+        if (principalSearchSet.size === 0) {
+            document.querySelector(".recipes").innerHTML = "";
+            noresults.style.display = 'block';
+            noresults.textContent = "Aucune recette ne correspond à votre critère... vous pouvez\
+    chercher « tarte aux pommes », « poisson », etc.";
+            clearCombos();
+        } else {
+            noresults.style.display = 'none';
+            updateCombosWithSet(principalSearchSet);
         }
-        // si tous les mots ont été parcourus et trouvés dans la recette (allWordsFoundInRecipe n'a pas 
-        // été mis à false lors du parcours d'un des mots  <=> recherche positive: afficher la recette 
-        if (words.length !== 0 && words[0].length > 2 && j === words.length && allWordsFoundInRecipe) {
-            addToInterface(recipes[i].id);
-        } 
-
-    };
-
-    if (words.length !== 0 && words[0].length > 2)
-        globalSearchSet = new Set(resultSet);
-    //updateInterfaceWithSet(globalSearchSet);
-
-    if (globalSearchSet.size === 0) {
-        document.querySelector(".recipes").innerHTML = "";
-        
-        noresults.style.display = 'block';
-        noresults.textContent = "Aucune recette ne correspond à votre critère... vous pouvez\
-    chercher « tarte aux pommes », « poisson », etc."
-    } else {
-        noresults.style.display = 'none';
     }
-
-    if (words.length === 0) {
-        let noresults = document.getElementById('noresults');
-        noresults.style.display = 'none';
-        globalSearchSet = new Set(allRecipesSet);
-        currentSet = new Set(globalSearchSet);
-        let recipesSection = document.querySelector(".recipes");
-        recipes.forEach(recette => recipesSection.appendChild(new Card(recette).html));
-        cmbIngredients.fillContent(ingredients);
-        cmbAppareils.fillContent(appareils);
-        cmbUstensiles.fillContent(ustensiles);
-    }
-
 }
 
 function displaySet(set) {
@@ -180,38 +165,32 @@ function displaySet(set) {
 }
 
 function updateInterfaceWithSet(set) {
-    if (set.size === 0) currentSet = globalSearchSet;
-    else currentSet = set;
-    displaySet(currentSet);
-    cmbIngredients.content = loadIngredients(currentSet);
-    cmbIngredients.fillContent(cmbIngredients.content);
-
-    cmbAppareils.content = loadAppareils(currentSet);
-    cmbAppareils.fillContent(cmbAppareils.content);
-
-    cmbUstensiles.content = loadUstensiles(currentSet);
-    cmbUstensiles.fillContent(cmbUstensiles.content);
+    displaySet(set);
+    updateCombosWithSet(set);
 }
 
 function addToInterface(recetteId) {
     let recipesSection = document.querySelector(".recipes");
-    if (resultSet.size === 0) {
-        recipesSection.innerHTML = "";
-        currentSet = resultSet;
-    }
-    currentSet.add(recetteId);
     recipesSection.appendChild(new Card(recipes[recetteId - 1]).html);
-    cmbIngredients.content = loadIngredients(currentSet);
+    // le contenu des combos n'est mis à jour qu'une fois la recherche principale terminée 
+}
+
+function updateCombosWithSet(set) {
+    cmbIngredients.content = loadIngredients(set);
     cmbIngredients.fillContent(cmbIngredients.content);
 
-    cmbAppareils.content = loadAppareils(currentSet);
+    cmbAppareils.content = loadAppareils(set);
     cmbAppareils.fillContent(cmbAppareils.content);
 
-    cmbUstensiles.content = loadUstensiles(currentSet);
+    cmbUstensiles.content = loadUstensiles(set);
     cmbUstensiles.fillContent(cmbUstensiles.content);
 }
 
-
+function clearCombos() {
+    cmbIngredients.clear();
+    cmbAppareils.clear();
+    cmbUstensiles.clear();
+}
 
 
 
