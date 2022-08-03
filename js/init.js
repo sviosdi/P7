@@ -81,7 +81,12 @@ function search(evt) {
         let noresults = document.getElementById('noresults');
         noresults.style.display = 'none';
         principalSearchSet = new Set(allRecipesSet);  
-        updateInterfaceWithSet(principalSearchSet);
+        // prendre l'intersection avec les tags
+        if (currentTags["ingrédients"].length === 0 && currentTags["appareils"].length === 0 && currentTags["ustensiles"].length === 0) {
+            updateInterfaceWithSet(principalSearchSet);
+        } else {
+            updateInterfaceWithSet(interWithTags());
+        }
     } else if (words[0].length > 2) {
         principalSearchSet.clear();
         let recipesSection = document.querySelector(".recipes");
@@ -135,13 +140,22 @@ function search(evt) {
             }
             // si tous les mots ont été parcourus et trouvés dans la recette (allWordsFoundInRecipe n'a pas 
             // été mis à false lors du parcours d'un des mots  <=> recherche positive: afficher la recette 
-            if (words.length !== 0 && words[0].length > 2 && j === words.length && allWordsFoundInRecipe) {   
-                principalSearchSet.add(recipes[i].id);
-                addToInterface(recipes[i].id);
+            if (words.length !== 0 && words[0].length > 2 && j === words.length && allWordsFoundInRecipe) {                 
+                if (currentTags["ingrédients"].length === 0 && currentTags["appareils"].length === 0 && currentTags["ustensiles"].length === 0) {
+                    // aucun tag
+                    principalSearchSet.add(recipes[i].id);
+                    addToInterface(recipes[i].id);
+                } else { // des tags sont présents
+                    principalSearchSet.add(recipes[i].id);
+                    if (interWithTags().has(recipes[i].id)) {                      
+                        addToInterface(recipes[i].id);
+                    } else {
+                        principalSearchSet.delete(recipes[i].id);
+                    }
+                }
             }
         };
-        // toutes les recettes ont été parcourues et les cards 'positives' affichées
-       
+        // toutes les recettes ont été parcourues et les cards 'positives' affichées       
 
         if (principalSearchSet.size === 0) {
             document.querySelector(".recipes").innerHTML = "";

@@ -84,30 +84,10 @@ class Combo {
                 div.appendChild(i);
                 tags.appendChild(div);
                 i.addEventListener('click', evt => {
+                    // suppression du tab sélectionné
                     currentTags[this._type].splice(currentTags[this._type].indexOf(k), 1);
-                    div.remove();
-                    //console.log(globalSearchSet)
-                    //console.log(currentTags)
-                    // console.log(loadIngredients(globalSearchSet).get(currentTags['ingrédients'][0]))
-                    // exemple : on supprime le tag k = 'tomate' => v = [2, 4 ,5, 16, 24, 26]
-
-                    //updateInterfaceWithSet(currentSet);
-                    let results = [];
-
-                    let ing = loadIngredients(principalSearchSet);
-                    currentTags['ingrédients'].forEach(tag => {
-                        results.push(ing.get(tag));
-                    })
-                    let app = loadAppareils(principalSearchSet);
-                    currentTags['appareils'].forEach(tag => {
-                        results.push(app.get(tag));
-                    })
-                    let ust = loadUstensiles(principalSearchSet);
-                    currentTags['ustensiles'].forEach(tag => {
-                        results.push(ust.get(tag));
-                    })
-
-                    updateInterfaceWithSet(new Set((intersectMulti(results))));
+                    div.remove();                    
+                    updateInterfaceWithSet(interWithTags(currentTags));
                 });
             }).bind(this))
             this._menu.appendChild(a);
@@ -142,6 +122,34 @@ function intersect2(array1, array2) {
     return inter;
 }
 
+function interWithTags() {
+    // chaque élément du tableau sera le tableau des id. des recettes de la recherche
+    // principale correspondant à un tag encore présent.
+    let results = [];
+    //console.log(principalSearchSet)
+    let ing = loadIngredients(principalSearchSet);
+    currentTags['ingrédients'].forEach(tag => {
+        console.log(`${tag} : ${ing.get(tag)}`)
+        // si tag = "sucre" on ajoute à results [1,22,25,43 ...], les id. des recettes
+        // de la recherche principale ayant 'sucre' pour ingrédient
+        results.push(ing.get(tag));
+    })
+    let app = loadAppareils(principalSearchSet);
+    currentTags['appareils'].forEach(tag => {
+        results.push(app.get(tag));
+    })
+    let ust = loadUstensiles(principalSearchSet);
+    currentTags['ustensiles'].forEach(tag => {
+        results.push(ust.get(tag));
+    })
 
+    // les recettes à conserver sont celles de l'intersection entre tous les tableaux de results.
+    // Cette intersection n'est vide que si plus aucun tag n'est présent, sinon elle ne pas pas être vide, 
+    // car si un tag a été sélectionné, c'est qu'il y a nécessairement des recettes qui lui correspondent.
+    let inter = new Set((intersectMulti(results)));
+    if (inter.size === 0)
+        inter = principalSearchSet;
+    return inter;
+}
 
 
