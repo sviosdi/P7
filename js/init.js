@@ -24,16 +24,11 @@ searchBar.addEventListener("input", search);
 
 function loadIngredients(set) {
     if (!set) set = allRecipesSet;
-    const ingredients = new Map();
+    const ingredients = new Set();
     for (let r_id of set) {
         let recette = recipes[r_id - 1];
         recette.ingredients.forEach(ing => {
-            let recipesTab = ingredients.get(ing.ingredient.toLowerCase())
-            if (!recipesTab) {
-                recipesTab = [];
-                ingredients.set(ing.ingredient.toLowerCase(), recipesTab)
-            }
-            recipesTab.push(recette.id);
+            ingredients.add(ing.ingredient.toLowerCase());           
         });
     }
     return ingredients;
@@ -41,16 +36,11 @@ function loadIngredients(set) {
 
 function loadUstensiles(set) {
     if (!set) set = allRecipesSet;
-    const ustensiles = new Map();
+    const ustensiles = new Set();
     for (let r_id of set) {
         let recette = recipes[r_id - 1];
         recette.ustensils.forEach(u => {
-            let recipesTab = ustensiles.get(u.toLowerCase())
-            if (!recipesTab) {
-                recipesTab = [];
-                ustensiles.set(u.toLowerCase(), recipesTab)
-            }
-            recipesTab.push(recette.id);
+            ustensiles.add(u.toLowerCase());
         });
     }
     return ustensiles;
@@ -58,22 +48,16 @@ function loadUstensiles(set) {
 
 function loadAppareils(set) {
     if (!set) set = allRecipesSet;
-    const appareils = new Map();
+    const appareils = new Set();
     for (let r_id of set) {
-        let recette = recipes[r_id - 1];
-        let recipesTab = appareils.get(recette.appliance.toLowerCase());
-        if (!recipesTab) {
-            recipesTab = [];
-            appareils.set(recette.appliance.toLowerCase(), recipesTab)
-        }
-        recipesTab.push(recette.id);
+        let recette = recipes[r_id - 1];  
+        appareils.add(recette.appliance.toLowerCase());
     }
     return appareils;
 }
 
 /* Fonction de recherche principale */
 function search(evt) {
-
     let searchString = evt.target.value.toLowerCase();
     let words = searchString.split(' ').filter(v => v != '');
 
@@ -190,13 +174,17 @@ function addToInterface(recetteId) {
 }
 
 function updateCombosWithSet(set) {
-    cmbIngredients.content = loadIngredients(set);
+    if (set === allRecipesSet) {
+        cmbIngredients.content = ingredients;
+        cmbAppareils.content = appareils;
+        cmbUstensiles.content = ustensiles;
+    } else {
+        cmbIngredients.content = loadIngredients(set);
+        cmbAppareils.content = loadAppareils(set);
+        cmbUstensiles.content = ustensiles;        
+    }
     cmbIngredients.fillContent(cmbIngredients.content);
-
-    cmbAppareils.content = loadAppareils(set);
     cmbAppareils.fillContent(cmbAppareils.content);
-
-    cmbUstensiles.content = loadUstensiles(set);
     cmbUstensiles.fillContent(cmbUstensiles.content);
 }
 

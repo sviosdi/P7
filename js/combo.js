@@ -65,33 +65,34 @@ class Combo {
                  des seuls id. de recettes actuellement affichées. 
                  Cette fonction remplit le menu du combo et gère le 'click' sur chacun des éléments qui le remplissent.
     */
-    fillContent(content) {
+    fillContent(set) {
         this._menu.innerHTML = "";
-        while (content.forEach((v, k) => {
+        for(let key of set) {
             let a = document.createElement('a');
-            a.textContent = k;
+            a.textContent = key;
             a.addEventListener('click', (evt => {
-                updateInterfaceWithSet(new Set(v));
+                // fonction de filtrage ici
+                //updateInterfaceWithSet(new Set(v));
                 let tags = document.getElementById("tags");
                 let div = document.createElement('div');
                 div.classList.add(`tag-${this._type.slice(0, 3)}`);
-                currentTags[this._type].push(k);
+                currentTags[this._type].push(key);
                 let span = document.createElement('span');
                 let i = document.createElement('i');
                 i.setAttribute('class', 'fa-regular fa-circle-xmark');
-                span.textContent = k;
+                span.textContent = key;
                 div.appendChild(span);
                 div.appendChild(i);
                 tags.appendChild(div);
                 i.addEventListener('click', evt => {
                     // suppression du tab sélectionné
-                    currentTags[this._type].splice(currentTags[this._type].indexOf(k), 1);
-                    div.remove();                    
+                    currentTags[this._type].splice(currentTags[this._type].indexOf(key), 1);
+                    div.remove();
                     updateInterfaceWithSet(interWithTags(currentTags));
                 });
-            }).bind(this))
+            }).bind(this));
             this._menu.appendChild(a);
-        }));
+        };
     }
 
     search(evt) {
