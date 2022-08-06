@@ -2,12 +2,13 @@ let cmbIngredients = new Combo('Ingrédients');
 let cmbAppareils = new Combo('Appareils');
 let cmbUstensiles = new Combo("Ustensiles");
 
+let allRecipesSet = new Set(); // le set de l'ensemble des 50 recettes.
+recipes.forEach(recette => allRecipesSet.add(recette.id));
 
-
-let globalSearchSet = new Set(); // le set des recettes correspondant à la recherche en cours
-recipes.forEach(recette => globalSearchSet.add(recette.id));
-const allRecipesSet = new Set(globalSearchSet);
-let currentSet = new Set(allRecipesSet);
+let principalSearchSet = new Set(allRecipesSet); // le set des recettes correspondant à la recherche principale en cours.
+// au départ, on affiche toutes les recettes
+let currentSet = new Set(allRecipesSet); // le set du résultat de la recherche principale filtrée par l'ajout des tags.
+let resultSet = new Set();
 let currentTags = { 'ingrédients': [], 'appareils': [], 'ustensiles': [] };
 
 let ingredients = loadIngredients();
@@ -16,13 +17,7 @@ let appareils = loadAppareils();
 cmbIngredients.resize(600);
 //let orderedIng = new Map([...ingredients.entries()].sort());
 
-cmbIngredients.content = ingredients;
-cmbIngredients.fillContent(cmbIngredients.content);
-cmbAppareils.content = appareils;
-cmbAppareils.fillContent(cmbAppareils.content);
-cmbUstensiles.content = ustensiles;
-cmbUstensiles.fillContent(cmbUstensiles.content);
-displaySet(currentSet);
+updateInterfaceWithSet(allRecipesSet);
 
 let searchBar = document.getElementById("search-bar");
 searchBar.addEventListener("input", search);
@@ -67,96 +62,112 @@ function loadAppareils(set) {
     for (let r_id of set) {
         let recette = recipes[r_id - 1];
         let recipesTab = appareils.get(recette.appliance.toLowerCase());
-            if (!recipesTab) {
-                recipesTab = [];
-                appareils.set(recette.appliance.toLowerCase(), recipesTab)
-            }
-            recipesTab.push(recette.id);
+        if (!recipesTab) {
+            recipesTab = [];
+            appareils.set(recette.appliance.toLowerCase(), recipesTab)
+        }
+        recipesTab.push(recette.id);
     }
     return appareils;
 }
 
-
-let resultMap = new Map();
-
 /* Fonction de recherche principale */
 function search(evt) {
+
     let searchString = evt.target.value.toLowerCase();
     let words = searchString.split(' ').filter(v => v != '');
 
-    let results = [];
-    /* algorithme initial : pour chacun des mots, pour chacune des recettes... et recherche dans les clé des ingrédients et
-                            non dans les ingrédients de la recette eux-mêmes.
-       inconvénients : obligation de filtrer toutes les recettes avant d'afficher les résultats.
-                       il faut calculer l'intersection des résultats séparément.
-                            */
-    words.forEach((word, idx) => {
-        /* si ingredients : '{lait de coco' => [1, 2, 3]}, { .... }, ..
-        si word = 'coc' trouvé dans 'lait de coco' alors ajout au set des id. 1, 2 et 3 des recettes correspondantes; */
-        if ((idx === 0 && word.length > 2) || idx > 0) {
-            let set = new Set();
-            ingredients.forEach((v, k) => {
-                if (k.includes(word)) {
-                    v.forEach(i => set.add(i));
-                }
-            });
-
-            /* pour chacune des recettes : bouche 'for' car pas de possibilité  
-               de stopper une boucle 'forEach' par continue ou break; */
-            for (let i = 0; i < recipes.length; i++) {
-                /* si 'coc' est trouvé dans le titre de la recette, 'Poulet coco réunionnais" par ex.
-                   ajouter alors l'id. de la recette au set. */
-                if (recipes[i].name.toLowerCase().includes(word)) {
-                    set.add(recipes[i].id); 
-                    // inutile de rechercher dans la description, la recette étant déjà ajoutée au set.
-                    continue; 
-                }
-                /* recherche dans la description de la recette */
-                if (recipes[i].description.toLowerCase().includes(word)) {
-                    set.add(recipes[i].id);
-                }
-
-            }
-            results.push(set);
-        }
-    });
-
-    if (results.length > 0) {
-        let inter = new Set();
-        for (let e of results[0]) {
-            let found = true;
-            for (let i = 1; i < results.length; i++) {
-                if (!results[i].has(e)) {
-                    found = false;
-                    break;
-                }
-            }
-            if (found)
-                inter.add(e);
-        }
-        
-        globalSearchSet = inter;
-        updateInterfaceWithSet(inter);
+    if (words.length === 0) {
         let noresults = document.getElementById('noresults');
-        if (inter.size === 0) {
+        noresults.style.display = 'none';
+        principalSearchSet = new Set(allRecipesSet);  
+        // prendre l'intersection avec les tags
+        if (currentTags["ingrédients"].length === 0 && currentTags["appareils"].length === 0 && currentTags["ustensiles"].length === 0) {
+            updateInterfaceWithSet(principalSearchSet);
+        } else {
+            updateInterfaceWithSet(interWithTags());
+        }
+    } else if (words[0].length > 2) {
+        principalSearchSet.clear();
+        let recipesSection = document.querySelector(".recipes");
+        recipesSection.innerHTML = "";
+         
+        for (let i = 0; i < recipes.length; i++) {
+            let allWordsFoundInRecipe = true;
+            let j;
+            for (j = 0; j < words.length; j++) {
+                // if ((j === 0 && words[j].length > 2) || j > 0) {
+                let ings = recipes[i].ingredients;
+                let foundIfIngredients = 0;
+                for (let k = 0; k < ings.length; k++) {
+                    if (ings[k].ingredient.toLowerCase().includes(words[j])) {
+                        foundIfIngredients = 1;
+                        // le j-ème mot de la recherche principale est trouvé dans un des ingrédients
+                        // de la recette, inutile de le rechercher dans les ingrédients suivants
+                        // quitter le parcours des ingrédients et passer à la suite
+                        break; // sur k (les ingrédients)
+                    }
+                };
+
+                if (foundIfIngredients) {
+                    // le j-ème mot de la recherche principale a été trouvé dans les ingrédients, inutile de
+                    // le rechercher dans le titre ou dans la description
+                    // marquer le mot comme trouvé et passer au mot suivant                        
+                    continue; // sur j (les mots)
+                }
+
+                // continuer la recherche dans le titre
+
+                if (recipes[i].name.toLowerCase().includes(words[j])) {
+                    // le j-ème mot de la recherche principale a été trouvé dans le titre inutile de
+                    // le rechercher dans la description
+                    // marquer le mot comme trouvé et passer au mot suivant               
+                    continue; // sur j (les mots)
+                }
+
+                // continuer la recherche dans la description
+
+                if (recipes[i].description.toLowerCase().includes(words[j])) {
+                    // le j-ème mot de la recherche principale a été trouvé dans la description
+                    // marquer le mot comme trouvé et passer au mot suivant                                     
+                    continue; // sur j (les mots)
+                }
+
+                // le j-ème mot de la recherche principale n'a pas été trouvé dans la recette
+                allWordsFoundInRecipe = false;
+                break; // sur j (les mots)
+                //}
+            }
+            // si tous les mots ont été parcourus et trouvés dans la recette (allWordsFoundInRecipe n'a pas 
+            // été mis à false lors du parcours d'un des mots  <=> recherche positive: afficher la recette 
+            if (words.length !== 0 && words[0].length > 2 && j === words.length && allWordsFoundInRecipe) {                 
+                if (currentTags["ingrédients"].length === 0 && currentTags["appareils"].length === 0 && currentTags["ustensiles"].length === 0) {
+                    // aucun tag
+                    principalSearchSet.add(recipes[i].id);
+                    addToInterface(recipes[i].id);
+                } else { // des tags sont présents
+                    principalSearchSet.add(recipes[i].id);
+                    if (interWithTags().has(recipes[i].id)) {                      
+                        addToInterface(recipes[i].id);
+                    } else {
+                        principalSearchSet.delete(recipes[i].id);
+                    }
+                }
+            }
+        };
+        // toutes les recettes ont été parcourues et les cards 'positives' affichées       
+
+        if (principalSearchSet.size === 0) {
+            document.querySelector(".recipes").innerHTML = "";
             noresults.style.display = 'block';
             noresults.textContent = "Aucune recette ne correspond à votre critère... vous pouvez\
-        chercher « tarte aux pommes », « poisson », etc."
+    chercher « tarte aux pommes », « poisson », etc.";
+            clearCombos();
         } else {
             noresults.style.display = 'none';
+            updateCombosWithSet(principalSearchSet);
         }
-    } 
-
-    if (words.length === 0) {
-        globalSearchSet = new Set(allRecipesSet);
-        currentSet = new Set(globalSearchSet);
-        let recipesSection = document.querySelector(".recipes");
-        recipes.forEach(recette => recipesSection.appendChild(new Card(recette).html));
-        cmbIngredients.fillContent(ingredients);
-        cmbAppareils.fillContent(appareils);
-        cmbUstensiles.fillContent(ustensiles);
     }
-
 }
 
 function displaySet(set) {
@@ -168,22 +179,32 @@ function displaySet(set) {
 }
 
 function updateInterfaceWithSet(set) {
-    if (set.size === 0) currentSet = globalSearchSet;
-    else currentSet = set;
-    displaySet(currentSet);
-    cmbIngredients.content = loadIngredients(currentSet);
+    displaySet(set);
+    updateCombosWithSet(set);
+}
+
+function addToInterface(recetteId) {
+    let recipesSection = document.querySelector(".recipes");
+    recipesSection.appendChild(new Card(recipes[recetteId - 1]).html);
+    // le contenu des combos n'est mis à jour qu'une fois la recherche principale terminée 
+}
+
+function updateCombosWithSet(set) {
+    cmbIngredients.content = loadIngredients(set);
     cmbIngredients.fillContent(cmbIngredients.content);
 
-    cmbAppareils.content = loadAppareils(currentSet);
+    cmbAppareils.content = loadAppareils(set);
     cmbAppareils.fillContent(cmbAppareils.content);
 
-    cmbUstensiles.content = loadUstensiles(currentSet);
+    cmbUstensiles.content = loadUstensiles(set);
     cmbUstensiles.fillContent(cmbUstensiles.content);
 }
 
-
-
-
+function clearCombos() {
+    cmbIngredients.clear();
+    cmbAppareils.clear();
+    cmbUstensiles.clear();
+}
 
 
 
