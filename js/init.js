@@ -36,6 +36,7 @@ function loadIngredients(set) {
             recipesTab.push(recette.id);
         });
     }
+    console.log(ingredients)
     return ingredients;
 }
 
@@ -80,7 +81,7 @@ function search(evt) {
     if (words.length === 0) {
         let noresults = document.getElementById('noresults');
         noresults.style.display = 'none';
-        principalSearchSet = new Set(allRecipesSet);  
+        principalSearchSet = new Set(allRecipesSet);
         // prendre l'intersection avec les tags
         if (currentTags["ingrédients"].length === 0 && currentTags["appareils"].length === 0 && currentTags["ustensiles"].length === 0) {
             updateInterfaceWithSet(principalSearchSet);
@@ -91,7 +92,7 @@ function search(evt) {
         principalSearchSet.clear();
         let recipesSection = document.querySelector(".recipes");
         recipesSection.innerHTML = "";
-         
+
         for (let i = 0; i < recipes.length; i++) {
             let allWordsFoundInRecipe = true;
             let j;
@@ -140,14 +141,14 @@ function search(evt) {
             }
             // si tous les mots ont été parcourus et trouvés dans la recette (allWordsFoundInRecipe n'a pas 
             // été mis à false lors du parcours d'un des mots  <=> recherche positive: afficher la recette 
-            if (words.length !== 0 && words[0].length > 2 && j === words.length && allWordsFoundInRecipe) {                 
+            if (words.length !== 0 && words[0].length > 2 && j === words.length && allWordsFoundInRecipe) {
                 if (currentTags["ingrédients"].length === 0 && currentTags["appareils"].length === 0 && currentTags["ustensiles"].length === 0) {
                     // aucun tag
                     principalSearchSet.add(recipes[i].id);
                     addToInterface(recipes[i].id);
                 } else { // des tags sont présents
                     principalSearchSet.add(recipes[i].id);
-                    if (interWithTags().has(recipes[i].id)) {                      
+                    if (interWithTags().has(recipes[i].id)) {
                         addToInterface(recipes[i].id);
                     } else {
                         principalSearchSet.delete(recipes[i].id);
@@ -190,13 +191,17 @@ function addToInterface(recetteId) {
 }
 
 function updateCombosWithSet(set) {
-    cmbIngredients.content = loadIngredients(set);
+    if (set === allRecipesSet) {
+        cmbIngredients.content = ingredients;
+        cmbAppareils.content = appareils;
+        cmbUstensiles.content = ustensiles;
+    } else {
+        cmbIngredients.content = loadIngredients(set);
+        cmbAppareils.content = loadAppareils(set);
+        cmbUstensiles.content = loadUstensiles(set);
+    }
     cmbIngredients.fillContent(cmbIngredients.content);
-
-    cmbAppareils.content = loadAppareils(set);
     cmbAppareils.fillContent(cmbAppareils.content);
-
-    cmbUstensiles.content = loadUstensiles(set);
     cmbUstensiles.fillContent(cmbUstensiles.content);
 }
 

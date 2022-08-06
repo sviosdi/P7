@@ -67,7 +67,7 @@ class Combo {
     */
     fillContent(content) {
         this._menu.innerHTML = "";
-        while (content.forEach((v, k) => {
+        content.forEach((v, k) => {
             let a = document.createElement('a');
             a.textContent = k;
             a.addEventListener('click', (evt => {
@@ -86,12 +86,12 @@ class Combo {
                 i.addEventListener('click', evt => {
                     // suppression du tab sélectionné
                     currentTags[this._type].splice(currentTags[this._type].indexOf(k), 1);
-                    div.remove();                    
+                    div.remove();
                     updateInterfaceWithSet(interWithTags(currentTags));
                 });
             }).bind(this))
             this._menu.appendChild(a);
-        }));
+        });
     }
 
     search(evt) {
