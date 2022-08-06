@@ -181,7 +181,7 @@ function updateCombosWithSet(set) {
     } else {
         cmbIngredients.content = loadIngredients(set);
         cmbAppareils.content = loadAppareils(set);
-        cmbUstensiles.content = ustensiles;        
+        cmbUstensiles.content = loadUstensiles(set);        
     }
     cmbIngredients.fillContent(cmbIngredients.content);
     cmbAppareils.fillContent(cmbAppareils.content);

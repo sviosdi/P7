@@ -65,14 +65,18 @@ class Combo {
                  des seuls id. de recettes actuellement affichées. 
                  Cette fonction remplit le menu du combo et gère le 'click' sur chacun des éléments qui le remplissent.
     */
+    /*
+        maintenant : Content un set qui ne contient que les ingrédients concernés par les recettes actuellement affichées
+    */
     fillContent(set) {
         this._menu.innerHTML = "";
-        for(let key of set) {
+        for (let key of set) {
             let a = document.createElement('a');
             a.textContent = key;
             a.addEventListener('click', (evt => {
                 // fonction de filtrage ici
                 //updateInterfaceWithSet(new Set(v));
+                updateInterfaceWithSet(fiterSetWith(key, this._type));
                 let tags = document.getElementById("tags");
                 let div = document.createElement('div');
                 div.classList.add(`tag-${this._type.slice(0, 3)}`);
@@ -121,6 +125,41 @@ function intersect2(array1, array2) {
         if (array2.includes(v)) inter.push(v);
     })
     return inter;
+}
+
+// Filtre le set résultat de la recherche principale avec la valeur key passée en paramètre
+// Retourne le Set des id. de recettes de principalSearchSet contenant la clé key.
+// si key = 'sucre', filtre principalSearchSet pour retourner le set des id. de recettes dont un ingrédient est key.
+function fiterSetWith(key, type) {
+    let result = new Set();
+    switch (type) {
+        case 'ingrédients':
+            for (let id of principalSearchSet) {
+                let recette = recipes[id - 1];
+                for (let el of recette.ingredients) {
+                    if (el.ingredient.toLowerCase() === key) result.add(id);
+                }
+            }
+            break;
+        case 'appareils':
+            for (let id of principalSearchSet) {
+                let recette = recipes[id - 1];
+                if (recette.appliance.toLowerCase() === key) result.add(id);
+            }
+            break;
+        case 'ustensiles':
+            for (let id of principalSearchSet) {
+                let recette = recipes[id - 1];
+                for (let el of recette.ustensils) {
+                    if (el.toLowerCase() === key) result.add(id);
+                }
+            }
+           break;
+        default:
+            throw ("type de combo inconnu dans filteSetWith");        
+    }
+    return result;
+
 }
 
 function interWithTags() {
