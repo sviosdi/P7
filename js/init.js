@@ -7,7 +7,7 @@ recipes.forEach(recette => allRecipesSet.add(recette.id));
 
 let principalSearchSet = new Set(allRecipesSet); // le set des recettes correspondant à la recherche principale en cours.
 // au départ, on affiche toutes les recettes
-let currentSet = new Set(allRecipesSet); // le set du résultat de la recherche principale filtrée par l'ajout des tags.
+//let currentSet = new Set(allRecipesSet); // le set du résultat de la recherche principale filtrée par l'ajout des tags.
 let resultSet = new Set();
 let currentTags = { 'ingrédients': [], 'appareils': [], 'ustensiles': [] };
 

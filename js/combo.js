@@ -129,7 +129,7 @@ function interWithTags() {
     //console.log(principalSearchSet)
     let ing = loadIngredients(principalSearchSet);
     currentTags['ingrédients'].forEach(tag => {
-        console.log(`${tag} : ${ing.get(tag)}`)
+        //console.log(`${tag} : ${ing.get(tag)}`)
         // si tag = "sucre" on ajoute à results [1,22,25,43 ...], les id. des recettes
         // de la recherche principale ayant 'sucre' pour ingrédient
         results.push(ing.get(tag));
