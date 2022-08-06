@@ -36,7 +36,6 @@ function loadIngredients(set) {
             recipesTab.push(recette.id);
         });
     }
-    console.log(ingredients)
     return ingredients;
 }
 
