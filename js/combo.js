@@ -113,22 +113,6 @@ class Combo {
     }
 }
 
-function intersectMulti(arrays) {
-    if (arrays.length === 0) return [];
-    if (arrays.length === 1) return arrays[0];
-    return arrays.reduce((prev, cur) => intersect2(prev, cur), arrays[0])
-
-}
-
-function intersect2(array1, array2) {
-    if (array1 === array2) return array1;
-    let inter = [];
-    array1.forEach(v => {
-        if (array2.includes(v)) inter.push(v);
-    })
-    return inter;
-}
-
 // Filtre les recettes affichées currentSet avec la valeur key passée en paramètre
 // Retourne le Set des id. de recettes affichées contenant la clé key.
 // si key = 'sucre', filtre currentSet pour retourner le set des id. de recettes dont un ingrédient est key.
@@ -228,51 +212,5 @@ function filterPrincipalSearch() {
     return result;
 }
 
-function filterSetWithAllTags() {
-    // filtrer ici si il y a des tags
-    let ingTags = currentTags['ingrédients'];
-    let appTags = currentTags['appareils'];
-    let ustTags = currentTags['ustensiles'];
-
-    for (let app of appTags) {
-        currentSet = fiterSetWithTag(app, 'appareils');
-    }
-    for (let ing of ingTags) {
-        currentSet = fiterSetWithTag(ing, 'ingrédients');
-    }
-    for (let ust of ustTags) {
-        currentSet = fiterSetWithTag(ust, 'ustensiles');
-    }
-}
-
-function interWithTags() {
-    // chaque élément du tableau sera le tableau des id. des recettes de la recherche
-    // principale correspondant à un tag encore présent.
-    let results = [];
-    //console.log(principalSearchSet)
-    let ing = loadIngredients(principalSearchSet);
-    currentTags['ingrédients'].forEach(tag => {
-        // console.log(`${tag} : ${ing.get(tag)}`)
-        // si tag = "sucre" on ajoute à results [1,22,25,43 ...], les id. des recettes
-        // de la recherche principale ayant 'sucre' pour ingrédient
-        results.push(ing.get(tag));
-    })
-    let app = loadAppareils(principalSearchSet);
-    currentTags['appareils'].forEach(tag => {
-        results.push(app.get(tag));
-    })
-    let ust = loadUstensiles(principalSearchSet);
-    currentTags['ustensiles'].forEach(tag => {
-        results.push(ust.get(tag));
-    })
-
-    // les recettes à conserver sont celles de l'intersection entre tous les tableaux de results.
-    // Cette intersection n'est vide que si plus aucun tag n'est présent, sinon elle ne pas pas être vide, 
-    // car si un tag a été sélectionné, c'est qu'il y a nécessairement des recettes qui lui correspondent.
-    let inter = new Set((intersectMulti(results)));
-    if (inter.size === 0)
-        inter = principalSearchSet;
-    return inter;
-}
 
 
