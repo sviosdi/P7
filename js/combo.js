@@ -150,57 +150,51 @@ function fiterSetWithTag(key, type) {
 
 function recipeRespectsTag(id, tag, type) {
     let recette = recipes[id - 1];
-    let found = false;
+   //let found = false;
     switch (type) {
         case 'ingrédients':
             for (let el of recette.ingredients) {
                 if (el.ingredient.toLowerCase() === tag) {
-                    found = true;
-                    break;
+                    return true;
                 };
             }
-            return found;
+            return false;
         case 'appareils':
             return recette.appliance.toLowerCase() === tag;
         case 'ustensiles':
             for (let ust of recette.ustensils) {
                 if (ust.toLowerCase() === tag) {
-                    found = true;
-                    break;
+                    return true;
                 }
             }
-            return found;
+            return false;
     }
 
 }
 
 function recipeRespectsAllTags(id) {
-    let respectsAll = true;
     let ingTags = currentTags['ingrédients'];
     let appTags = currentTags['appareils'];
     let ustTags = currentTags['ustensiles'];
   
     for (let app of appTags) {
         if (!recipeRespectsTag(id, app, 'appareils')) {
-            respectsAll = false;
-            break;
+            return false;
         }
     }
 
     for (let ing of ingTags) {
         if (!recipeRespectsTag(id, ing, 'ingrédients')) {
-            respectsAll = false;
-            break;
+            return false;            
         }
     }
 
     for (let ust of ustTags) {
         if (!recipeRespectsTag(id, ust, 'ustensiles')) {
-            respectsAll = false;
-            break;
+            return false;
         }
     }
-    return respectsAll;
+    return true;
 }
 
 
