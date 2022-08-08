@@ -70,7 +70,7 @@ function search(evt) {
         let noresults = document.getElementById('noresults');
         noresults.style.display = 'none';
         principalSearchSet = new Set(allRecipesSet);
-        if (currentTags["ingrédients"].length === 0 && currentTags["appareils"].length === 0 && currentTags["ustensiles"].length === 0) {
+        if (currentTags["ingrédients"].length === 0 && currentTags.appareils.length === 0 && currentTags.ustensiles.length === 0) {
             updateInterfaceWithSet(allRecipesSet);
         } else {
             currentSet = filterSet(principalSearchSet);
@@ -98,7 +98,7 @@ function search(evt) {
                         // quitter le parcours des ingrédients et passer à la suite
                         break; // sur k (les ingrédients)
                     }
-                };
+                }
 
                 if (foundInIngredients) {
                     // le j-ème mot de la recherche principale a été trouvé dans les ingrédients, inutile de
@@ -133,7 +133,7 @@ function search(evt) {
             // été mis à false lors du parcours d'un des mots  <=> recherche positive: afficher la recette 
             if (j === words.length && allWordsFoundInRecipe) {
                 principalSearchSet.add(i + 1); //recipes[i].id);
-                if ((currentTags["ingrédients"].length === 0 && currentTags["appareils"].length === 0 && currentTags["ustensiles"].length === 0) || recipeRespectsAllTags(i + 1)) {                    
+                if ((currentTags["ingrédients"].length === 0 && currentTags.appareils.length === 0 && currentTags.ustensiles.length === 0) || recipeRespectsAllTags(i + 1)) {                    
                     addToInterface(i + 1);  // recipes[i].id);
                     currentSet.add(i + 1);
                 }
