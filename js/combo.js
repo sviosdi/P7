@@ -59,12 +59,9 @@ class Combo {
         this._menu.innerHTML = "";
     }
 
-    /* content : Map dont les clés (ingrédients, appareils ou ustensiles) ont pour valeur associée le tableau
-                 des seuls id. de recettes actuellement affichées. 
-                 Cette fonction remplit le menu du combo et gère le 'click' sur chacun des éléments qui le remplissent.
-    */
+
     /*
-        maintenant : Content un set qui ne contient que les ingrédients | appareils | ustensiles concernés par les
+        Le set passé en paramètre ne contient que les ingrédients | appareils | ustensiles concernés par les
         recettes actuellement affichées.
     */
     fillContent(set) {
@@ -74,7 +71,6 @@ class Combo {
             a.textContent = key;
             a.addEventListener('click', (evt => {
                 // fonction de filtrage ici
-                // updateInterfaceWithSet(new Set(v)); 
                 currentSet = filterSetWithTag(currentSet, key, this._type);
                 updateInterfaceWithSet(currentSet);
                 let tags = document.getElementById("tags");
@@ -101,32 +97,32 @@ class Combo {
     }
 
     search(evt) {
-        let map = new Map();
-        while (this.content.forEach((v, k) => {
-            if (k.includes(this._input.value.toLowerCase())) {
-                map.set(k, v);
+        let result = new Set();
+        for (let tag of this.content) {
+            if (tag.includes(this._input.value.toLowerCase())) {
+                result.add(tag);
             }
-        }));
-        this.fillContent(map);
-        if (map.size > 0) this.open();
+            this.fillContent(result)
+        }
+        if (result.size > 0) this.open();
     }
 }
 
 
 // Filtre le set des id. de recettes passé en paramètre en lui appliquant les filtres de currentTags
-// Retourne le set filtré sans avoir modifier le set initial.
+// Retourne le set filtré sans avoir modifié le set initial.
 function filterSet(set) {
-    newSet = new Set();
+    result = new Set();
     for (let id of set)
-        if (recipeRespectsAllTags(id)) newSet.add(id);
-    return newSet;
+        if (recipeRespectsAllTags(id)) result.add(id);
+    return result;
 }
 
 
 // set = le set d'id. de recettes à filtrer
 // tag = le tag utilisé comme filtre
 // si tag = 'sucre', filtre le set pour ne conserver que les id. de recettes dont un ingrédient est 'sucre'.
-// Retourne le set filtré sans avoir modifier le set initial.
+// Retourne le set filtré avec le tag 'tag' de type 'type' sans avoir modifié le set initial.
 function filterSetWithTag(set, tag, type) {
     let result = new Set();
     for (let id of set)

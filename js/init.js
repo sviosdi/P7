@@ -26,7 +26,7 @@ let searchBar = document.getElementById("search-bar");
 searchBar.addEventListener("input", search);
 
 // paramètre : set = un set d'id. de recettes
-// retourne le set des ingrédients utilisés par chacune des recettes du set paramètre.
+// Retourne le set des ingrédients utilisés par chacune des recettes du set passé en paramètre.
 function loadIngredients(set) {
     if (!set) set = allRecipesSet;
     const ingset = new Set();
@@ -73,7 +73,8 @@ function search(evt) {
         if (currentTags["ingrédients"].length === 0 && currentTags["appareils"].length === 0 && currentTags["ustensiles"].length === 0) {
             updateInterfaceWithSet(allRecipesSet);
         } else {
-            updateInterfaceWithSet(filterSet(principalSearchSet));
+            currentSet = filterSet(principalSearchSet);
+            updateInterfaceWithSet(currentSet);
         }
         return;
     } else if (words[0].length > 2) {
