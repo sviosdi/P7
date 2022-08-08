@@ -67,14 +67,13 @@ function search(evt) {
     let words = searchString.split(' ').filter(v => v != '');
 
     if (words.length === 0) {
-        console.log('aucun mot')
         let noresults = document.getElementById('noresults');
         noresults.style.display = 'none';
         principalSearchSet = new Set(allRecipesSet);
         if (currentTags["ingrédients"].length === 0 && currentTags["appareils"].length === 0 && currentTags["ustensiles"].length === 0) {
             updateInterfaceWithSet(allRecipesSet);
         } else {
-            updateInterfaceWithSet(filterPrincipalSearch());
+            updateInterfaceWithSet(filterSet(principalSearchSet));
         }
         return;
     } else if (words[0].length > 2) {

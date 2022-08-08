@@ -1,5 +1,3 @@
-
-
 class Combo {
     constructor(placeholder) {
         let combo = document.createElement('div');
@@ -76,8 +74,9 @@ class Combo {
             a.textContent = key;
             a.addEventListener('click', (evt => {
                 // fonction de filtrage ici
-                // updateInterfaceWithSet(new Set(v));                
-                updateInterfaceWithSet(fiterSetWithTag(key, this._type));
+                // updateInterfaceWithSet(new Set(v)); 
+                currentSet = filterSetWithTag(currentSet, key, this._type);
+                updateInterfaceWithSet(currentSet);
                 let tags = document.getElementById("tags");
                 let div = document.createElement('div');
                 div.classList.add(`tag-${this._type.slice(0, 3)}`);
@@ -93,7 +92,7 @@ class Combo {
                     // suppression du tab sélectionné
                     currentTags[this._type].splice(currentTags[this._type].indexOf(key), 1);
                     div.remove();
-                    currentSet = filterPrincipalSearch();
+                    currentSet = filterSet(principalSearchSet);
                     updateInterfaceWithSet(currentSet);
                 });
             }).bind(this));
@@ -113,44 +112,31 @@ class Combo {
     }
 }
 
-// Filtre les recettes affichées currentSet avec la valeur key passée en paramètre
-// Retourne le Set des id. de recettes affichées contenant la clé key.
-// si key = 'sucre', filtre currentSet pour retourner le set des id. de recettes dont un ingrédient est key.
-function fiterSetWithTag(key, type) {
-    let result = new Set();
-    switch (type) {
-        case 'ingrédients':
-            for (let id of currentSet) {
-                let recette = recipes[id - 1];
-                for (let el of recette.ingredients) {
-                    if (el.ingredient.toLowerCase() === key) result.add(id);
-                }
-            }
-            break;
-        case 'appareils':
-            for (let id of currentSet) {
-                let recette = recipes[id - 1];
-                if (recette.appliance.toLowerCase() === key) result.add(id);
-            }
-            break;
-        case 'ustensiles':
-            for (let id of currentSet) {
-                let recette = recipes[id - 1];
-                for (let ust of recette.ustensils) {
-                    if (ust.toLowerCase() === key) result.add(id);
-                }
-            }
-            break;
-        default:
-            throw ("type de combo inconnu dans filterSetWith");
-    }
-    currentSet = result;
-    return currentSet;
+
+// Filtre le set des id. de recettes passé en paramètre en lui appliquant les filtres de currentTags
+// Retourne le set filtré sans avoir modifier le set initial.
+function filterSet(set) {
+    newSet = new Set();
+    for (let id of set)
+        if (recipeRespectsAllTags(id)) newSet.add(id);
+    return newSet;
 }
 
+
+// set = le set d'id. de recettes à filtrer
+// tag = le tag utilisé comme filtre
+// si tag = 'sucre', filtre le set pour ne conserver que les id. de recettes dont un ingrédient est 'sucre'.
+// Retourne le set filtré sans avoir modifier le set initial.
+function filterSetWithTag(set, tag, type) {
+    let result = new Set();
+    for (let id of set)
+        if (recipeRespectsTag(id, tag, type)) result.add(id);
+    return result;
+}
+
+// Retourne le boolean indiquant si la recette d'identifiant 'id' respecte le 'tag' tag de type 'type'
 function recipeRespectsTag(id, tag, type) {
     let recette = recipes[id - 1];
-   //let found = false;
     switch (type) {
         case 'ingrédients':
             for (let el of recette.ingredients) {
@@ -169,14 +155,14 @@ function recipeRespectsTag(id, tag, type) {
             }
             return false;
     }
-
 }
 
+// Retourne le boolean indiquant si la recette d'identifiant 'id' respecte tous les tags de currentTags
 function recipeRespectsAllTags(id) {
     let ingTags = currentTags['ingrédients'];
     let appTags = currentTags['appareils'];
     let ustTags = currentTags['ustensiles'];
-  
+
     for (let app of appTags) {
         if (!recipeRespectsTag(id, app, 'appareils')) {
             return false;
@@ -185,7 +171,7 @@ function recipeRespectsAllTags(id) {
 
     for (let ing of ingTags) {
         if (!recipeRespectsTag(id, ing, 'ingrédients')) {
-            return false;            
+            return false;
         }
     }
 
@@ -196,15 +182,4 @@ function recipeRespectsAllTags(id) {
     }
     return true;
 }
-
-
-function filterPrincipalSearch() {
-    let result = new Set();
-    for (let id of principalSearchSet)
-        if (recipeRespectsAllTags(id))
-            result.add(id);
-    return result;
-}
-
-
 
