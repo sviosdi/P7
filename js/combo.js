@@ -116,9 +116,9 @@ function intersectMulti(arrays) {
 function intersect2(array1, array2) {
     if (array1 === array2) return array1;
     let inter = [];
-    array1.forEach(v => {
-        if (array2.includes(v)) inter.push(v);
-    })
+    for (let i = 0; i < array1.length; i++) {
+        if (array2.includes(array1[i])) inter.push(array1[i]);
+    }
     return inter;
 }
 

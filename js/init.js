@@ -3,7 +3,6 @@ let cmbAppareils = new Combo('Appareils');
 let cmbUstensiles = new Combo("Ustensiles");
 
 let allRecipesSet = new Set(); // le set de l'ensemble des 50 recettes.
-//recipes.forEach(recette => allRecipesSet.add(recette.id)); 33,42% plus lent que la ligne ci-dessous
 for(let i=0; i< recipes.length; i++)
 	allRecipesSet.add(i+1);
 
@@ -25,56 +24,56 @@ searchBar.addEventListener("input", search);
 
 function loadIngredients(set) {
     if (!set) set = allRecipesSet;
-    const ingredients = new Map();
+    const ingMap = new Map();
     for (let r_id of set) {
         let recette = recipes[r_id - 1];
         recette.ingredients.forEach(ing => {
-            let recipesTab = ingredients.get(ing.ingredient.toLowerCase())
+            let recipesTab = ingMap.get(ing.ingredient.toLowerCase())
             if (!recipesTab) {
                 recipesTab = [];
-                ingredients.set(ing.ingredient.toLowerCase(), recipesTab)
+                ingMap.set(ing.ingredient.toLowerCase(), recipesTab)
             }
             recipesTab.push(recette.id);
         });
     }
-    return ingredients;
+    return ingMap;
 }
 
 function loadUstensiles(set) {
     if (!set) set = allRecipesSet;
-    const ustensiles = new Map();
+    const ustMap = new Map();
     for (let r_id of set) {
         let recette = recipes[r_id - 1];
         recette.ustensils.forEach(u => {
-            let recipesTab = ustensiles.get(u.toLowerCase())
+            let recipesTab = ustMap.get(u.toLowerCase())
             if (!recipesTab) {
                 recipesTab = [];
-                ustensiles.set(u.toLowerCase(), recipesTab)
+                ustMap.set(u.toLowerCase(), recipesTab)
             }
             recipesTab.push(recette.id);
         });
     }
-    return ustensiles;
+    return ustMap;
 }
 
 function loadAppareils(set) {
     if (!set) set = allRecipesSet;
-    const appareils = new Map();
+    const appMap = new Map();
     for (let r_id of set) {
         let recette = recipes[r_id - 1];
-        let recipesTab = appareils.get(recette.appliance.toLowerCase());
+        let recipesTab = appMap.get(recette.appliance.toLowerCase());
         if (!recipesTab) {
             recipesTab = [];
-            appareils.set(recette.appliance.toLowerCase(), recipesTab)
+            appMap.set(recette.appliance.toLowerCase(), recipesTab)
         }
         recipesTab.push(recette.id);
     }
-    return appareils;
+    return appMap;
 }
 
 /* Fonction de recherche principale */
 function search(evt) {
-
+    console.time('principalSearch');
     let searchString = evt.target.value.toLowerCase();
     let words = searchString.split(' ').filter(v => v != '');
 
@@ -83,7 +82,7 @@ function search(evt) {
         noresults.style.display = 'none';
         principalSearchSet = new Set(allRecipesSet);
         // prendre l'intersection avec les tags
-        if (currentTags["ingrédients"].length === 0 && currentTags["appareils"].length === 0 && currentTags["ustensiles"].length === 0) {
+        if (currentTags["ingrédients"].length === 0 && currentTags.appareils.length === 0 && currentTags.ustensiles.length === 0) {
             updateInterfaceWithSet(principalSearchSet);
         } else {
             updateInterfaceWithSet(interWithTags());
@@ -142,7 +141,7 @@ function search(evt) {
             // si tous les mots ont été parcourus et trouvés dans la recette (allWordsFoundInRecipe n'a pas 
             // été mis à false lors du parcours d'un des mots  <=> recherche positive: afficher la recette 
             if (words.length !== 0 && words[0].length > 2 && j === words.length && allWordsFoundInRecipe) {
-                if (currentTags["ingrédients"].length === 0 && currentTags["appareils"].length === 0 && currentTags["ustensiles"].length === 0) {
+                if (currentTags["ingrédients"].length === 0 && currentTags.appareils.length === 0 && currentTags.ustensiles.length === 0) {
                     // aucun tag
                     principalSearchSet.add(recipes[i].id);
                     addToInterface(recipes[i].id);
