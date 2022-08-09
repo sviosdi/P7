@@ -6,14 +6,13 @@ let allRecipesSet = new Set(); // le set de l'ensemble des 50 recettes.
 recipes.forEach(recette => allRecipesSet.add(recette.id));
 
 let principalSearchSet = new Set(allRecipesSet); // le set des recettes correspondant à la recherche principale en cours.
-// au départ, on affiche toutes les recettes
-//let currentSet = new Set(allRecipesSet); // le set du résultat de la recherche principale filtrée par l'ajout des tags.
-let resultSet = new Set();
+
 let currentTags = { 'ingrédients': [], 'appareils': [], 'ustensiles': [] };
 
 let ingredients = loadIngredients();
 let ustensiles = loadUstensiles();
 let appareils = loadAppareils();
+
 cmbIngredients.resize(600);
 //let orderedIng = new Map([...ingredients.entries()].sort());
 
