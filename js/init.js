@@ -3,7 +3,9 @@ let cmbAppareils = new Combo('Appareils');
 let cmbUstensiles = new Combo("Ustensiles");
 
 let allRecipesSet = new Set(); // le set des id de l'ensemble des 50 recettes.
-recipes.forEach(recette => allRecipesSet.add(recette.id));
+//recipes.forEach(recette => allRecipesSet.add(recette.id));
+for (let i = 0; i < recipes.length; i++)
+    allRecipesSet.add(i + 1);
 
 let principalSearchSet = new Set(allRecipesSet); // le set des recettes correspondant à la recherche principale en cours.
 // au départ, on affiche toutes les recettes
