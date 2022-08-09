@@ -3,11 +3,12 @@ let cmbAppareils = new Combo('Appareils');
 let cmbUstensiles = new Combo("Ustensiles");
 
 let allRecipesSet = new Set(); // le set de l'ensemble des 50 recettes.
-for(let i=0; i< recipes.length; i++)
-	allRecipesSet.add(i+1);
+for (let i = 0; i < recipes.length; i++)
+    allRecipesSet.add(i + 1);
 
 let principalSearchSet = new Set(allRecipesSet); // le set des recettes correspondant à la recherche principale en cours.
-
+// au départ, on affiche toutes les recettes
+let currentSet = new Set(allRecipesSet);  // le set du résultat de la recherche principale filtrée par l'ajout des tags.
 let currentTags = { 'ingrédients': [], 'appareils': [], 'ustensiles': [] };
 
 let ingredients = loadIngredients();
@@ -73,7 +74,7 @@ function loadAppareils(set) {
 
 /* Fonction de recherche principale */
 function search(evt) {
-    console.time('principalSearch');
+    // console.time('principalSearch');
     let searchString = evt.target.value.toLowerCase();
     let words = searchString.split(' ').filter(v => v != '');
 
@@ -85,10 +86,13 @@ function search(evt) {
         if (currentTags["ingrédients"].length === 0 && currentTags.appareils.length === 0 && currentTags.ustensiles.length === 0) {
             updateInterfaceWithSet(principalSearchSet);
         } else {
-            updateInterfaceWithSet(interWithTags());
+            currentSet = interWithTags();
+            updateInterfaceWithSet(currentSet);
         }
+        return;
     } else if (words[0].length > 2) {
         principalSearchSet.clear();
+        currentSet.clear();
         let recipesSection = document.querySelector(".recipes");
         recipesSection.innerHTML = "";
 
@@ -96,7 +100,6 @@ function search(evt) {
             let allWordsFoundInRecipe = true;
             let j;
             for (j = 0; j < words.length; j++) {
-                // if ((j === 0 && words[j].length > 2) || j > 0) {
                 let ings = recipes[i].ingredients;
                 let foundIfIngredients = 0;
                 for (let k = 0; k < ings.length; k++) {
@@ -138,34 +141,28 @@ function search(evt) {
                 break; // sur j (les mots)
                 //}
             }
+
             // si tous les mots ont été parcourus et trouvés dans la recette (allWordsFoundInRecipe n'a pas 
             // été mis à false lors du parcours d'un des mots  <=> recherche positive: afficher la recette 
-            if (words.length !== 0 && words[0].length > 2 && j === words.length && allWordsFoundInRecipe) {
-                if (currentTags["ingrédients"].length === 0 && currentTags.appareils.length === 0 && currentTags.ustensiles.length === 0) {
-                    // aucun tag
-                    principalSearchSet.add(recipes[i].id);
-                    addToInterface(recipes[i].id);
-                } else { // des tags sont présents
-                    principalSearchSet.add(recipes[i].id);
-                    if (interWithTags().has(recipes[i].id)) {
-                        addToInterface(recipes[i].id);
-                    } else {
-                        principalSearchSet.delete(recipes[i].id);
-                    }
+            if (j === words.length && allWordsFoundInRecipe) {
+                principalSearchSet.add(i + 1); //recipes[i].id);
+                if ((currentTags["ingrédients"].length === 0 && currentTags.appareils.length === 0 && currentTags.ustensiles.length === 0) || recipeRespectsAllTags(i + 1)) {
+                    addToInterface(i + 1);
+                    currentSet.add(i + 1);
                 }
             }
         };
         // toutes les recettes ont été parcourues et les cards 'positives' affichées       
 
-        if (principalSearchSet.size === 0) {
+        if (currentSet.size === 0) {
             document.querySelector(".recipes").innerHTML = "";
             noresults.style.display = 'block';
             noresults.textContent = "Aucune recette ne correspond à votre critère... vous pouvez\
-    chercher « tarte aux pommes », « poisson », etc.";
+    chercher « tarte aux pommes », « poisson », etc. ou supprimer éventuellement des filtres";
             clearCombos();
         } else {
             noresults.style.display = 'none';
-            updateCombosWithSet(principalSearchSet);
+            updateCombosWithSet(currentSet);
         }
     }
 }
@@ -208,7 +205,11 @@ function clearCombos() {
     cmbIngredients.clear();
     cmbAppareils.clear();
     cmbUstensiles.clear();
+    cmbIngredients.close();
+    cmbAppareils.close();
+    cmbAppareils.close();
 }
+
 
 
 

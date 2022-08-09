@@ -83,11 +83,13 @@ class Combo {
                 div.appendChild(span);
                 div.appendChild(i);
                 tags.appendChild(div);
+                this._input.value = "";
                 i.addEventListener('click', evt => {
                     // suppression du tab sélectionné
                     currentTags[this._type].splice(currentTags[this._type].indexOf(k), 1);
                     div.remove();
-                    updateInterfaceWithSet(interWithTags(currentTags));
+                    currentSet = interWithTags(currentTags);
+                    updateInterfaceWithSet(currentSet);
                 });
             }).bind(this))
             this._menu.appendChild(a);
@@ -122,6 +124,7 @@ function intersect2(array1, array2) {
     return inter;
 }
 
+// retourne le set des id. de principalSearchSet filtrés par l'ensemble des tags de currentTags.
 function interWithTags() {
     // chaque élément du tableau sera le tableau des id. des recettes de la recherche
     // principale correspondant à un tag encore présent.
@@ -150,6 +153,55 @@ function interWithTags() {
     if (inter.size === 0)
         inter = principalSearchSet;
     return inter;
+}
+
+// Retourne le boolean indiquant si la recette d'identifiant 'id' respecte le 'tag' tag de type 'type'
+function recipeRespectsTag(id, tag, type) {
+    let recette = recipes[id - 1];
+    switch (type) {
+        case 'ingrédients':
+            for (let el of recette.ingredients) {
+                if (el.ingredient.toLowerCase() === tag) {
+                    return true;
+                };
+            }
+            return false;
+        case 'appareils':
+            return recette.appliance.toLowerCase() === tag;
+        case 'ustensiles':
+            for (let ust of recette.ustensils) {
+                if (ust.toLowerCase() === tag) {
+                    return true;
+                }
+            }
+            return false;
+    }
+}
+
+// Retourne le boolean indiquant si la recette d'identifiant 'id' respecte tous les tags de currentTags
+function recipeRespectsAllTags(id) {
+    let ingTags = currentTags['ingrédients'];
+    let appTags = currentTags['appareils'];
+    let ustTags = currentTags['ustensiles'];
+
+    for (let app of appTags) {
+        if (!recipeRespectsTag(id, app, 'appareils')) {
+            return false;
+        }
+    }
+
+    for (let ing of ingTags) {
+        if (!recipeRespectsTag(id, ing, 'ingrédients')) {
+            return false;
+        }
+    }
+
+    for (let ust of ustTags) {
+        if (!recipeRespectsTag(id, ust, 'ustensiles')) {
+            return false;
+        }
+    }
+    return true;
 }
 
 
