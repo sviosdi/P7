@@ -12,10 +12,11 @@ let principalSearchSet = new Set(allRecipesSet); // le set des recettes correspo
 let currentSet = new Set(allRecipesSet); // le set du résultat de la recherche principale filtrée par l'ajout des tags.
 let currentTags = { 'ingrédients': [], 'appareils': [], 'ustensiles': [] };
 
+console.time('init');
 let ingredients = loadIngredients();
 let appareils = loadAppareils();
 let ustensiles = loadUstensiles();
-
+console.timeEnd('init');
 cmbIngredients.resize(600);
 
 /*console.log(ingredients)
@@ -78,6 +79,7 @@ function search(evt) {
         }
         return;
     } else if (words[0].length > 2) {
+        console.time('principal');
         principalSearchSet.clear();
         currentSet.clear();
         let recipesSection = document.querySelector(".recipes");
@@ -133,24 +135,32 @@ function search(evt) {
             // été mis à false lors du parcours d'un des mots  <=> recherche positive: afficher la recette 
             if (j === words.length && allWordsFoundInRecipe) {
                 principalSearchSet.add(i + 1); //recipes[i].id);
-                if ((currentTags["ingrédients"].length === 0 && currentTags.appareils.length === 0 && currentTags.ustensiles.length === 0) || recipeRespectsAllTags(i + 1)) {                    
+                if ((currentTags["ingrédients"].length === 0 && currentTags.appareils.length === 0 && currentTags.ustensiles.length === 0) || recipeRespectsAllTags(i + 1)) {
                     addToInterface(i + 1);  // recipes[i].id);
                     currentSet.add(i + 1);
                 }
             }
         }
-    }
-    // toutes les recettes ont été parcourues et les cards 'positives' affichées et principalSearchSet, currentSet mis à jour    
 
-    if (currentSet.size === 0) {
-        noresults.style.display = 'block';
-        noresults.textContent = "Aucune recette ne correspond à votre critère... vous pouvez\
+        // toutes les recettes ont été parcourues et les cards 'positives' affichées et principalSearchSet, currentSet mis à jour    
+
+        if (currentSet.size === 0) {
+            noresults.style.display = 'block';
+            noresults.textContent = "Aucune recette ne correspond à votre critère... vous pouvez\
     chercher « tarte aux pommes », « poisson », etc. ou supprimer éventuellement des filtres";
-        clearCombos();
-    } else {
-        noresults.style.display = 'none';
-        updateCombosWithSet(currentSet);
+            clearCombos();
+            console.timeEnd('principal')
+            console.log('pas de résultats')
+            console.log('---------')
+        } else {
+            noresults.style.display = 'none';
+            updateCombosWithSet(currentSet);
+            console.timeEnd('principal')
+            console.log('résultats')
+            console.log('---------')
+        }
     }
+
 }
 
 
