@@ -11,7 +11,7 @@ let principalSearchSet = new Set(allRecipesSet); // le set des recettes correspo
 let currentSet = new Set(allRecipesSet);  // le set du résultat de la recherche principale filtrée par l'ajout des tags.
 let currentTags = { 'ingrédients': [], 'appareils': [], 'ustensiles': [] };
 
-let ingredients = loadIngredients();
+let ingredients = loadIngredients(); 
 let ustensiles = loadUstensiles();
 let appareils = loadAppareils();
 
@@ -29,10 +29,11 @@ function loadIngredients(set) {
     for (let r_id of set) {
         let recette = recipes[r_id - 1];
         recette.ingredients.forEach(ing => {
-            let recipesTab = ingMap.get(ing.ingredient.toLowerCase())
+            let key = ing.ingredient.toLowerCase();
+            let recipesTab = ingMap.get(key)
             if (!recipesTab) {
                 recipesTab = [];
-                ingMap.set(ing.ingredient.toLowerCase(), recipesTab)
+                ingMap.set(key, recipesTab);
             }
             recipesTab.push(recette.id);
         });
@@ -46,10 +47,11 @@ function loadUstensiles(set) {
     for (let r_id of set) {
         let recette = recipes[r_id - 1];
         recette.ustensils.forEach(u => {
-            let recipesTab = ustMap.get(u.toLowerCase())
+            let key = u.toLowerCase();
+            let recipesTab = ustMap.get(key)
             if (!recipesTab) {
                 recipesTab = [];
-                ustMap.set(u.toLowerCase(), recipesTab)
+                ustMap.set(key, recipesTab);
             }
             recipesTab.push(recette.id);
         });
@@ -62,10 +64,11 @@ function loadAppareils(set) {
     const appMap = new Map();
     for (let r_id of set) {
         let recette = recipes[r_id - 1];
-        let recipesTab = appMap.get(recette.appliance.toLowerCase());
+        let key = recette.appliance.toLowerCase();
+        let recipesTab = appMap.get(key);
         if (!recipesTab) {
             recipesTab = [];
-            appMap.set(recette.appliance.toLowerCase(), recipesTab)
+            appMap.set(key, recipesTab)
         }
         recipesTab.push(recette.id);
     }
@@ -79,9 +82,7 @@ function search(evt) {
     let words = searchString.split(' ').filter(v => v != '');
 
     if (words.length === 0) {
-        let noresults = document.getElementById('noresults');
-        noresults.style.display = 'none';
-        principalSearchSet = new Set(allRecipesSet);
+        principalSearchSet = new Set(allRecipesSet);       
         // prendre l'intersection avec les tags
         if (currentTags["ingrédients"].length === 0 && currentTags.appareils.length === 0 && currentTags.ustensiles.length === 0) {
             updateInterfaceWithSet(principalSearchSet);
@@ -176,6 +177,8 @@ function displaySet(set) {
 }
 
 function updateInterfaceWithSet(set) {
+    let noresults = document.getElementById('noresults');
+    noresults.style.display = set.size != 0 ? 'none' : 'block';
     displaySet(set);
     updateCombosWithSet(set);
 }

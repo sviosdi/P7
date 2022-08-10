@@ -71,7 +71,9 @@ class Combo {
             let a = document.createElement('a');
             a.textContent = k;
             a.addEventListener('click', (evt => {
-                updateInterfaceWithSet(new Set(v));
+                // sélection d'un item du combo ('sucre' par exemple, ou 'four')
+                currentSet = new Set(v);
+                updateInterfaceWithSet(current);
                 let tags = document.getElementById("tags");
                 let div = document.createElement('div');
                 div.classList.add(`tag-${this._type.slice(0, 3)}`);
@@ -146,12 +148,13 @@ function interWithTags() {
         results.push(ust.get(tag));
     })
 
-    // les recettes à conserver sont celles de l'intersection entre tous les tableaux de results.
+    // Les recettes à conserver sont celles de l'intersection entre tous les tableaux de results.
     // Cette intersection n'est vide que si plus aucun tag n'est présent, sinon elle ne pas pas être vide, 
     // car si un tag a été sélectionné, c'est qu'il y a nécessairement des recettes qui lui correspondent.
-    let inter = new Set((intersectMulti(results)));
-    if (inter.size === 0)
+    let inter = intersectMulti(results);
+    if (inter.length === 0)
         inter = principalSearchSet;
+    else inter = new Set(inter);
     return inter;
 }
 
