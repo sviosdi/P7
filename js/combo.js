@@ -84,6 +84,7 @@ class Combo {
                 div.appendChild(span);
                 div.appendChild(i);
                 tags.appendChild(div);
+                this._input.value = "";
                 i.addEventListener('click', evt => {
                     // suppression du tab sélectionné
                     currentTags[this._type].splice(currentTags[this._type].indexOf(key), 1);

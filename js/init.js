@@ -145,7 +145,6 @@ function search(evt) {
     // toutes les recettes ont été parcourues et les cards 'positives' affichées et principalSearchSet, currentSet mis à jour    
 
     if (currentSet.size === 0) {
-       // document.querySelector(".recipes").innerHTML = "";
         noresults.style.display = 'block';
         noresults.textContent = "Aucune recette ne correspond à votre critère... vous pouvez\
     chercher « tarte aux pommes », « poisson », etc. ou supprimer éventuellement des filtres";
@@ -166,6 +165,13 @@ function displaySet(set) {
 }
 
 function updateInterfaceWithSet(set) {
+    if (set.size === 0) {
+        noresults.style.display = 'block';
+        noresults.textContent = "Aucune recette ne correspond à votre critère... vous pouvez\
+    chercher « tarte aux pommes », « poisson », etc.";
+    } else {
+        noresults.style.display = 'none';
+    }
     displaySet(set);
     updateCombosWithSet(set);
 }
@@ -195,6 +201,9 @@ function clearCombos() {
     cmbIngredients.clear();
     cmbAppareils.clear();
     cmbUstensiles.clear();
+    cmbIngredients.close();
+    cmbAppareils.close();
+    cmbUstensiles.close();
 }
 
 
