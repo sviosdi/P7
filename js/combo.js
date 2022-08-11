@@ -71,9 +71,7 @@ class Combo {
             a.textContent = key;
             a.addEventListener('click', (evt => {
                 // fonction de filtrage ici
-                console.time(key)
                 currentSet = filterSetWithTag(currentSet, key, this._type);
-                console.timeEnd(key);
                 updateInterfaceWithSet(currentSet);
                 
                 let tags = document.getElementById("tags");
@@ -92,9 +90,7 @@ class Combo {
                     // suppression du tab sélectionné
                     currentTags[this._type].splice(currentTags[this._type].indexOf(key), 1);
                     div.remove();
-                    console.time(key)
                     currentSet = filterSet(principalSearchSet);
-                    console.timeEnd(key);
                     updateInterfaceWithSet(currentSet);
                 });
             }).bind(this));

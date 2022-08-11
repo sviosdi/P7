@@ -12,16 +12,11 @@ let principalSearchSet = new Set(allRecipesSet); // le set des recettes correspo
 let currentSet = new Set(allRecipesSet); // le set du résultat de la recherche principale filtrée par l'ajout des tags.
 let currentTags = { 'ingrédients': [], 'appareils': [], 'ustensiles': [] };
 
-console.time('init');
 let ingredients = loadIngredients();
 let appareils = loadAppareils();
 let ustensiles = loadUstensiles();
-console.timeEnd('init');
-cmbIngredients.resize(600);
 
-/*console.log(ingredients)
-console.log(appareils)
-console.log(ustensiles)*/
+cmbIngredients.resize(600);
 
 updateInterfaceWithSet(allRecipesSet);
 
@@ -79,7 +74,6 @@ function search(evt) {
         }
         return;
     } else if (words[0].length > 2) {
-        console.time('principal');
         principalSearchSet.clear();
         currentSet.clear();
         let recipesSection = document.querySelector(".recipes");
@@ -149,15 +143,9 @@ function search(evt) {
             noresults.textContent = "Aucune recette ne correspond à votre critère... vous pouvez\
     chercher « tarte aux pommes », « poisson », etc. ou supprimer éventuellement des filtres";
             clearCombos();
-            console.timeEnd('principal')
-            console.log('pas de résultats')
-            console.log('---------')
         } else {
             noresults.style.display = 'none';
             updateCombosWithSet(currentSet);
-            console.timeEnd('principal')
-            console.log('résultats')
-            console.log('---------')
         }
     }
 
