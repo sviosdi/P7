@@ -272,6 +272,12 @@ body {
     cursor: pointer;
 }
 
+.combo-menu a.disabled {
+    pointer-events: none;
+    text-decoration: none;
+    color: #aaa;
+}
+
 .combo-menu a:hover {
     color: #eee;
     text-decoration:underline;
