@@ -97,7 +97,7 @@ class Combo {
                     currentTags[this._type].splice(currentTags[this._type].indexOf(k), 1);
                     div.remove();
                     // Filtre le résultat de la recherche principale avec les tags restant.
-                    currentSet = interWithTags(currentTags);
+                    currentSet = interWithTags();
                     updateInterfaceWithSet(currentSet);
                 });
             }).bind(this))
