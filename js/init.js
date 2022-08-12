@@ -161,7 +161,7 @@ function search(evt) {
                     currentSet.add(i + 1);
                 }
             }
-        };
+        }
         // toutes les recettes ont été parcourues et les cards 'positives' affichées       
 
         if (currentSet.size === 0) {

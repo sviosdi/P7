@@ -177,7 +177,7 @@ function recipeRespectsTag(id, tag, type) {
             for (let el of recette.ingredients) {
                 if (el.ingredient.toLowerCase() === tag) {
                     return true;
-                };
+                }
             }
             return false;
         case 'appareils':
