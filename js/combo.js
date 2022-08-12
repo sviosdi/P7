@@ -54,7 +54,8 @@ class Combo {
     isOpen() {
         return this._html.classList.contains('opened');
     }
-
+    
+    // supprime tout le contenu DOM du menu du combo
     clear() {
         this._menu.innerHTML = "";
     }
@@ -63,36 +64,38 @@ class Combo {
     /*
         Le set passé en paramètre ne contient que les ingrédients | appareils | ustensiles concernés par les
         recettes actuellement affichées.
+        Remplit le menu du combo avec les éléments (tags/key) du set.
     */
     fillContent(set) {
         this._menu.innerHTML = "";
-        for (let key of set) {
+        for (let tag of set) {
             let a = document.createElement('a');
-            a.textContent = key;
-            if (currentTags[this._type].includes(key)) {
+            a.textContent = tag;
+            if (currentTags[this._type].includes(tag)) {
                 a.classList.add('disabled');
             }
             a.addEventListener('click', (evt => {
                 // fonction de filtrage ici
-                currentSet = filterSetWithTag(currentSet, key, this._type);
-                currentTags[this._type].push(key);
+                currentSet = filterSetWithTag(currentSet, tag, this._type);
+                currentTags[this._type].push(tag);
                 updateInterfaceWithSet(currentSet);
-                
+                // ajout du tag
                 let tags = document.getElementById("tags");
                 let div = document.createElement('div');
                 div.classList.add(`tag-${this._type.slice(0, 3)}`);                
                 let span = document.createElement('span');
                 let i = document.createElement('i');
                 i.setAttribute('class', 'fa-regular fa-circle-xmark');
-                span.textContent = key;
+                span.textContent = tag;
                 div.appendChild(span);
                 div.appendChild(i);
                 tags.appendChild(div);
                 this._input.value = "";
                 i.addEventListener('click', evt => {
                     // suppression du tab sélectionné
-                    currentTags[this._type].splice(currentTags[this._type].indexOf(key), 1);
+                    currentTags[this._type].splice(currentTags[this._type].indexOf(tag), 1);
                     div.remove();
+                    // filtrage de la recherche principale en tenant compte des tags restants
                     currentSet = filterSet(principalSearchSet);
                     updateInterfaceWithSet(currentSet);
                 });

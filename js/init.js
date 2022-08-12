@@ -37,6 +37,8 @@ function loadIngredients(set) {
     return ingset;
 }
 
+// paramètre : set = un set d'id. de recettes
+// Retourne le set des ustensiles utilisés par chacune des recettes du set passé en paramètre.
 function loadUstensiles(set) {
     if (!set) set = allRecipesSet;
     const ustensiles = new Set();
@@ -49,6 +51,8 @@ function loadUstensiles(set) {
     return ustensiles;
 }
 
+// paramètre : set = un set d'id. de recettes
+// Retourne le set des appareils utilisés par chacune des recettes du set passé en paramètre.
 function loadAppareils(set) {
     if (!set) set = allRecipesSet;
     const appareils = new Set();
@@ -59,7 +63,7 @@ function loadAppareils(set) {
     return appareils;
 }
 
-/* Fonction de recherche principale */
+// Fonction de recherche principale 
 function search(evt) {
     let searchString = evt.target.value.toLowerCase();
     let words = searchString.split(' ').filter(v => v != '');
@@ -151,7 +155,7 @@ function search(evt) {
 
 }
 
-
+// Crée les Cards des recettes dont l'id. est un élément du set passé en paramètre puis les affiche.
 function displaySet(set) {
     let recipesSection = document.querySelector(".recipes");
     recipesSection.innerHTML = "";
@@ -160,6 +164,8 @@ function displaySet(set) {
     }
 }
 
+// Affiche les Cards correspondant au set passé en paramètre et met à jour le contenu des combos pour
+// qu'il ne corresponde qu'aux recettes du set passé en paramètre.
 function updateInterfaceWithSet(set) {
     if (set.size === 0) {
         noresults.style.display = 'block';
@@ -172,12 +178,16 @@ function updateInterfaceWithSet(set) {
     updateCombosWithSet(set);
 }
 
+// Ajout individuel d'un recette dont l'id. est passé en paramètre, sans mise à jour correspondante 
+// des combos.
 function addToInterface(recetteId) {
     let recipesSection = document.querySelector(".recipes");
     recipesSection.appendChild(new Card(recipes[recetteId - 1]).html);
     // le contenu des combos n'est mis à jour qu'une fois la recherche principale terminée 
 }
 
+// Met à jour le contenu des combos pour qu'il ne corresponde qu'aux 
+// recettes du set passé en paramètre.
 function updateCombosWithSet(set) {
     if (set === allRecipesSet) {
         cmbIngredients.content = ingredients;
