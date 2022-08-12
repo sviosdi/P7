@@ -69,15 +69,18 @@ class Combo {
         for (let key of set) {
             let a = document.createElement('a');
             a.textContent = key;
+            if (currentTags[this._type].includes(k)) {
+                a.classList.add('disabled');
+            }
             a.addEventListener('click', (evt => {
                 // fonction de filtrage ici
                 currentSet = filterSetWithTag(currentSet, key, this._type);
+                div.classList.add(`tag-${this._type.slice(0, 3)}`);
+                currentTags[this._type].push(key);
                 updateInterfaceWithSet(currentSet);
                 
                 let tags = document.getElementById("tags");
-                let div = document.createElement('div');
-                div.classList.add(`tag-${this._type.slice(0, 3)}`);
-                currentTags[this._type].push(key);
+                let div = document.createElement('div');            
                 let span = document.createElement('span');
                 let i = document.createElement('i');
                 i.setAttribute('class', 'fa-regular fa-circle-xmark');
