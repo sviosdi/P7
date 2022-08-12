@@ -67,17 +67,22 @@ class Combo {
     */
     fillContent(content) {
         this._menu.innerHTML = "";
-        content.forEach((v, k) => {
+        content.forEach((v, k) => {            
             let a = document.createElement('a');
             a.textContent = k;
+            if (currentTags[this._type].includes(k)) {
+                a.classList.add('disabled');
+                //console.log(`tag ${k} doit être désactivé`);
+            }
             a.addEventListener('click', (evt => {
                 // sélection d'un item du combo ('sucre' par exemple, ou 'four')
+                // ajout d'un tag k (= 'sucre') et filtrage
                 currentSet = new Set(v);
-                updateInterfaceWithSet(current);
+                currentTags[this._type].push(k); 
+                updateInterfaceWithSet(currentSet);              
                 let tags = document.getElementById("tags");
                 let div = document.createElement('div');
-                div.classList.add(`tag-${this._type.slice(0, 3)}`);
-                currentTags[this._type].push(k);
+                div.classList.add(`tag-${this._type.slice(0, 3)}`);                         
                 let span = document.createElement('span');
                 let i = document.createElement('i');
                 i.setAttribute('class', 'fa-regular fa-circle-xmark');
