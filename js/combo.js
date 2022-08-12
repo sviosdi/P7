@@ -97,7 +97,7 @@ class Combo {
                     currentTags[this._type].splice(currentTags[this._type].indexOf(k), 1);
                     div.remove();
                     // Filtre le résultat de la recherche principale avec les tags restant.
-                    currentSet = interWithTags();
+                    currentSet = filterPrincipalSearch();
                     updateInterfaceWithSet(currentSet);
                 });
             }).bind(this))
@@ -118,55 +118,12 @@ class Combo {
     }
 }
 
-// Paramètre : arrays : un tableau de tableaux.
-// Retourne l'intersection de tous les tableaux du tableau passé en paramètre.
-function intersectMulti(arrays) {
-    if (arrays.length === 0) return [];
-    if (arrays.length === 1) return arrays[0];
-    return arrays.reduce((prev, cur) => intersect2(prev, cur), arrays[0])
-
-}
-
-// Retourne le tableau intersection des deux tableaux passés en paramètre.
-function intersect2(array1, array2) {
-    if (array1 === array2) return array1;
-    let inter = [];
-    for (let i = 0; i < array1.length; i++) {
-        if (array2.includes(array1[i])) inter.push(array1[i]);
-    }
-    return inter;
-}
-
-// retourne le set des id. de principalSearchSet filtrés par l'ensemble des tags de currentTags.
-function interWithTags() {
-    // chaque élément du tableau sera le tableau des id. des recettes de la recherche
-    // principale correspondant à un tag encore présent.
-    let results = [];
-    //console.log(principalSearchSet)
-    let ing = loadIngredients(principalSearchSet);
-    currentTags['ingrédients'].forEach(tag => {
-        //console.log(`${tag} : ${ing.get(tag)}`)
-        // si tag = "sucre" on ajoute à results [1,22,25,43 ...], les id. des recettes
-        // de la recherche principale ayant 'sucre' pour ingrédient
-        results.push(ing.get(tag));
-    })
-    let app = loadAppareils(principalSearchSet);
-    currentTags['appareils'].forEach(tag => {
-        results.push(app.get(tag));
-    })
-    let ust = loadUstensiles(principalSearchSet);
-    currentTags['ustensiles'].forEach(tag => {
-        results.push(ust.get(tag));
-    })
-
-    // Les recettes à conserver sont celles de l'intersection entre tous les tableaux de results.
-    // Cette intersection n'est vide que si plus aucun tag n'est présent, sinon elle ne pas pas être vide, 
-    // car si un tag a été sélectionné, c'est qu'il y a nécessairement des recettes qui lui correspondent.
-    let inter = intersectMulti(results);
-    if (inter.length === 0)
-        inter = principalSearchSet;
-    else inter = new Set(inter);
-    return inter;
+// filtre la recherche principale avec les tags restants après suppression d'un tag.
+function filterPrincipalSearch() {
+    let result = new Set();
+    for (let id of principalSearchSet)
+        if (recipeRespectsAllTags(id)) result.add(id);
+    return result;
 }
 
 // Retourne le boolean indiquant si la recette d'identifiant 'id' respecte le 'tag' tag de type 'type'
