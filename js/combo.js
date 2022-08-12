@@ -101,7 +101,7 @@ class Combo {
                 });
             }).bind(this));
             this._menu.appendChild(a);
-        };
+        }
     }
 
     search(evt) {
@@ -120,7 +120,7 @@ class Combo {
 // Filtre le set des id. de recettes passé en paramètre en lui appliquant les filtres de currentTags
 // Retourne le set filtré sans avoir modifié le set initial.
 function filterSet(set) {
-    result = new Set();
+    let result = new Set();
     for (let id of set)
         if (recipeRespectsAllTags(id)) result.add(id);
     return result;
@@ -146,7 +146,7 @@ function recipeRespectsTag(id, tag, type) {
             for (let el of recette.ingredients) {
                 if (el.ingredient.toLowerCase() === tag) {
                     return true;
-                };
+                }
             }
             return false;
         case 'appareils':
