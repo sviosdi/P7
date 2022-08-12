@@ -57,13 +57,14 @@ class Combo {
         return this._html.classList.contains('opened');
     }
 
+    // Vide le DOM correspont au menu du combo.
     clear() {
         this._menu.innerHTML = "";
     }
 
     /* content : Map dont les clés (ingrédients, appareils ou ustensiles) ont pour valeur associée le tableau
                  des seuls id. de recettes actuellement affichées. 
-                 Cette fonction remplit le menu du combo et gère le 'click' sur chacun des éléments qui le remplissent.
+                 Cette méthode remplit le menu du combo et gère le 'click' sur chacun des éléments qui le remplissent.
     */
     fillContent(content) {
         this._menu.innerHTML = "";
@@ -72,14 +73,14 @@ class Combo {
             a.textContent = k;
             if (currentTags[this._type].includes(k)) {
                 a.classList.add('disabled');
-                //console.log(`tag ${k} doit être désactivé`);
             }
             a.addEventListener('click', (evt => {
                 // sélection d'un item du combo ('sucre' par exemple, ou 'four')
-                // ajout d'un tag k (= 'sucre') et filtrage
+                // filtrage
                 currentSet = new Set(v);
                 currentTags[this._type].push(k); 
-                updateInterfaceWithSet(currentSet);              
+                updateInterfaceWithSet(currentSet);  
+                // ajout d'un tag k  
                 let tags = document.getElementById("tags");
                 let div = document.createElement('div');
                 div.classList.add(`tag-${this._type.slice(0, 3)}`);                         
@@ -92,9 +93,10 @@ class Combo {
                 tags.appendChild(div);
                 this._input.value = "";
                 i.addEventListener('click', evt => {
-                    // suppression du tab sélectionné
+                    // suppression du tag k sélectionné
                     currentTags[this._type].splice(currentTags[this._type].indexOf(k), 1);
                     div.remove();
+                    // Filtre le résultat de la recherche principale avec les tags restant.
                     currentSet = interWithTags(currentTags);
                     updateInterfaceWithSet(currentSet);
                 });
@@ -103,6 +105,7 @@ class Combo {
         });
     }
 
+    // Méthode pour rechercher un item parmi les items du combo
     search(evt) {
         let map = new Map();
         while (this.content.forEach((v, k) => {
@@ -115,6 +118,8 @@ class Combo {
     }
 }
 
+// Paramètre : arrays : un tableau de tableaux.
+// Retourne l'intersection de tous les tableaux du tableau passé en paramètre.
 function intersectMulti(arrays) {
     if (arrays.length === 0) return [];
     if (arrays.length === 1) return arrays[0];
@@ -122,6 +127,7 @@ function intersectMulti(arrays) {
 
 }
 
+// Retourne le tableau intersection des deux tableaux passés en paramètre.
 function intersect2(array1, array2) {
     if (array1 === array2) return array1;
     let inter = [];

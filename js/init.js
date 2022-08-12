@@ -23,6 +23,9 @@ updateInterfaceWithSet(allRecipesSet);
 let searchBar = document.getElementById("search-bar");
 searchBar.addEventListener("input", search);
 
+// Paramètre : set = un Set d'id. de recettes.
+// Retourne un set dont les éléments sont les ingrédients des recettes dont l'id. appartient 
+// au set passé en paramètre.
 function loadIngredients(set) {
     if (!set) set = allRecipesSet;
     const ingMap = new Map();
@@ -41,6 +44,9 @@ function loadIngredients(set) {
     return ingMap;
 }
 
+// Paramètre : set = un Set d'id. de recettes.
+// Retourne un set dont les éléments sont les ustensiles des recettes dont l'id. appartient 
+// au set passé en paramètre.
 function loadUstensiles(set) {
     if (!set) set = allRecipesSet;
     const ustMap = new Map();
@@ -59,6 +65,9 @@ function loadUstensiles(set) {
     return ustMap;
 }
 
+// Paramètre : set = un Set d'id. de recettes.
+// Retourne un set dont les éléments sont les appareils des recettes dont l'id. appartient 
+// au set passé en paramètre.
 function loadAppareils(set) {
     if (!set) set = allRecipesSet;
     const appMap = new Map();
@@ -168,6 +177,7 @@ function search(evt) {
     }
 }
 
+// Crée les Cards des recettes dont l'id. est passé en paramètre et les ajoute à l'interface
 function displaySet(set) {
     let recipesSection = document.querySelector(".recipes");
     recipesSection.innerHTML = "";
@@ -176,6 +186,7 @@ function displaySet(set) {
     }
 }
 
+// Ajoute toutes les recettes du set passé en paramètre à l'interface puis met à jour les combos.
 function updateInterfaceWithSet(set) {
     let noresults = document.getElementById('noresults');
     noresults.style.display = set.size != 0 ? 'none' : 'block';
@@ -183,12 +194,16 @@ function updateInterfaceWithSet(set) {
     updateCombosWithSet(set);
 }
 
+// Ajoute individuellement la recette dont l'id. est passé en paramètre à l'interface, sans mettre à jour le 
+// contenu des combos.
 function addToInterface(recetteId) {
     let recipesSection = document.querySelector(".recipes");
     recipesSection.appendChild(new Card(recipes[recetteId - 1]).html);
     // le contenu des combos n'est mis à jour qu'une fois la recherche principale terminée 
 }
 
+// Met à jour le contenu des combos pour qu'il ne reflète que les recettes dont l'id. appartient 
+// au set passé en paramètre.
 function updateCombosWithSet(set) {
     if (set === allRecipesSet) {
         cmbIngredients.content = ingredients;

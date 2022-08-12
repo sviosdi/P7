@@ -30,7 +30,6 @@ class Card {
         ingdiv.classList.add('ingredients');
         let description = document.createElement('div');
         description.classList.add('desc');
-        //let descStr = data.description.length > 125 ? data.description.substring(0, 125) : data.description;
         description.textContent = data.description;
         details.appendChild(ingdiv);
         details.appendChild(description);
@@ -41,15 +40,13 @@ class Card {
 
         let ingredients = this.data.ingredients;
         ingredients.forEach(ing => {
-            let line = document.createElement("p");
-          //  let name = document.createElement("div");            
+            let line = document.createElement("p");            
             let quantity = document.createElement("span");          
             let unit = ing.unit ? adaptUnit(ing.unit) : "";
             let quantStr = (ing.quantity) ? `${ing.quantity}${unit}` : "";
             quantity.textContent = quantStr;
             let ponct = quantStr === "" ? '.' : ':';
             line.textContent = `${ing.ingredient}${ponct}`;
-           // line.appendChild(name);
             line.appendChild(quantity);
             ingdiv.appendChild(line);
         });
