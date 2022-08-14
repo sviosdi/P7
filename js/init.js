@@ -15,7 +15,7 @@ let ingredients = loadIngredients();
 let ustensiles = loadUstensiles();
 let appareils = loadAppareils();
 
-cmbIngredients.resize(600);
+//cmbIngredients.resize(600);
 //let orderedIng = new Map([...ingredients.entries()].sort());
 
 updateInterfaceWithSet(allRecipesSet);

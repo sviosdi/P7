@@ -1,0 +1,83 @@
+.recipes {
+    display: grid;
+    gap: 50px;
+    margin-top: 82px;
+    margin-bottom: 100px;
+}
+
+#combos {
+    gap: 20px;
+}
+
+@media all and (min-width: 1280px) {
+
+    body {
+        width: 1240px;
+    }
+
+    #combos {
+        width: 1240px;
+    }
+
+    .recipes {
+        grid-template-columns: 1fr 1fr 1fr;
+
+    }
+
+    .combo:first-child {
+        width: 600px;        
+    }
+
+    .combo:not(:first-child) {
+        flex-grow: 1;        
+    }
+
+    .combo:first-child .combo-menu {
+        width: 600px;        
+    }
+
+}
+
+@media all and (min-width: 850px) and (max-width: 1280px) {
+
+    body {
+        width: 810px;
+    }
+
+    .recipes {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .combo {
+        width: 256px;
+    }
+
+}
+
+@media all and (min-width: 380px) and (max-width: 850px) {
+
+    body {
+        width: 380px;
+    }
+
+    #combos {
+        flex-wrap: wrap;
+    }
+
+    .combo {
+        flex-grow: 1;
+    }
+
+    .combo:first-child .combo-menu {
+        z-index: 10;
+    }
+    .combo:nth-child(2) .combo-menu {
+        z-index: 9;
+    }
+
+
+
+    .recipes {
+        grid-template-columns: 1fr;
+    }
+}

@@ -31,7 +31,7 @@ class Combo {
         this._input = input;
         this._chevron = i;
         this._type = placeholder.toLowerCase();
-        this.resize(300);
+        //this.resize(300);
     }
 
     get html() {

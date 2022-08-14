@@ -11,11 +11,10 @@ header img {
 }
 
 body {
-    width: 1240px;
-    margin: auto;
     font-family: 'Lato', sans-serif;
     font-weight: 400;
     font-size: 18px;
+    margin: auto;
 }
 
 .search>div {
@@ -43,14 +42,6 @@ body {
     font-weight: 400;
     font-size: 18px;
     padding: 0px 24px;
-}
-
-.recipes {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 50px;
-    margin-top: 82px;
-    margin-bottom: 100px;
 }
 
 .card {
@@ -164,7 +155,6 @@ body {
 
 .combo {
     position: relative;
-    margin-right: 20px;
 }
 
 .combo.opened {
@@ -248,6 +238,7 @@ body {
     top: 69px;
     left: 0px;
     min-width: 170px;
+    width: 100%;
     background-color: inherit;
     border-radius: 0px 0px 5px 5px;
     color: white;
@@ -267,7 +258,8 @@ body {
 }
 
 .combo-menu a {
-    width: 150px;    
+    width: 140px;    
+    flex-grow: 1;
     padding: 0px 20px;
     cursor: pointer;
 }
