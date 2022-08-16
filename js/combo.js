@@ -1,5 +1,4 @@
-
-
+// eslint-disable-next-line no-unused-vars
 class Combo {
     constructor(placeholder) {
         let combo = document.createElement('div');
@@ -10,7 +9,7 @@ class Combo {
         input.setAttribute('placeholder', placeholder);
         let chevron = document.createElement('div');
         chevron.classList.add('chevron');
-        chevron.addEventListener('click', evt => {
+        chevron.addEventListener('click', () => {
             if (combo.classList.contains('closed'))
                 this.open();
             else this.close();
@@ -71,14 +70,18 @@ class Combo {
         content.forEach((v, k) => {            
             let a = document.createElement('a');
             a.textContent = k;
+            // eslint-disable-next-line no-undef
             if (currentTags[this._type].includes(k)) {
                 a.classList.add('disabled');
             }
-            a.addEventListener('click', (evt => {
+            a.addEventListener('click', (() => {
                 // sélection d'un item du combo ('sucre' par exemple, ou 'four')
                 // filtrage
+                // eslint-disable-next-line no-undef
                 currentSet = new Set(v);
+                // eslint-disable-next-line no-undef
                 currentTags[this._type].push(k); 
+                // eslint-disable-next-line no-undef
                 updateInterfaceWithSet(currentSet);  
                 // ajout d'un tag k  
                 let tags = document.getElementById("tags");
@@ -92,12 +95,15 @@ class Combo {
                 div.appendChild(i);
                 tags.appendChild(div);
                 this._input.value = "";
-                i.addEventListener('click', evt => {
+                i.addEventListener('click', () => {
                     // suppression du tag k sélectionné
+                    // eslint-disable-next-line no-undef
                     currentTags[this._type].splice(currentTags[this._type].indexOf(k), 1);
                     div.remove();
                     // Filtre le résultat de la recherche principale avec les tags restant.
+                    // eslint-disable-next-line no-undef
                     currentSet = filterPrincipalSearch();
+                    // eslint-disable-next-line no-undef
                     updateInterfaceWithSet(currentSet);
                 });
             }).bind(this))
@@ -106,7 +112,7 @@ class Combo {
     }
 
     // Méthode pour rechercher un item parmi les items du combo
-    search(evt) {
+    search() {
         let map = new Map();
         while (this.content.forEach((v, k) => {
             if (k.includes(this._input.value.toLowerCase())) {
@@ -121,6 +127,7 @@ class Combo {
 // filtre la recherche principale avec les tags restants après suppression d'un tag.
 function filterPrincipalSearch() {
     let result = new Set();
+    // eslint-disable-next-line no-undef
     for (let id of principalSearchSet)
         if (recipeRespectsAllTags(id)) result.add(id);
     return result;
@@ -128,6 +135,7 @@ function filterPrincipalSearch() {
 
 // Retourne le boolean indiquant si la recette d'identifiant 'id' respecte le 'tag' tag de type 'type'
 function recipeRespectsTag(id, tag, type) {
+    // eslint-disable-next-line no-undef
     let recette = recipes[id - 1];
     switch (type) {
         case 'ingrédients':
@@ -151,8 +159,11 @@ function recipeRespectsTag(id, tag, type) {
 
 // Retourne le boolean indiquant si la recette d'identifiant 'id' respecte tous les tags de currentTags
 function recipeRespectsAllTags(id) {
+    // eslint-disable-next-line no-undef
     let ingTags = currentTags['ingrédients'];
+    // eslint-disable-next-line no-undef
     let appTags = currentTags['appareils'];
+    // eslint-disable-next-line no-undef
     let ustTags = currentTags['ustensiles'];
 
     for (let app of appTags) {
