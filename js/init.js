@@ -1,8 +1,12 @@
+// eslint-disable-next-line no-undef
 let cmbIngredients = new Combo('Ingrédients');
+// eslint-disable-next-line no-undef
 let cmbAppareils = new Combo('Appareils');
+// eslint-disable-next-line no-undef
 let cmbUstensiles = new Combo("Ustensiles");
 
 let allRecipesSet = new Set(); // le set de l'ensemble des 50 recettes.
+// eslint-disable-next-line no-undef
 for (let i = 0; i < recipes.length; i++)
     allRecipesSet.add(i + 1);
 
@@ -18,6 +22,7 @@ let appareils = loadAppareils();
 cmbIngredients.resize(600);
 //let orderedIng = new Map([...ingredients.entries()].sort());
 
+let noresults = document.getElementById('noresults');
 updateInterfaceWithSet(allRecipesSet);
 
 let searchBar = document.getElementById("search-bar");
@@ -30,6 +35,7 @@ function loadIngredients(set) {
     if (!set) set = allRecipesSet;
     const ingMap = new Map();
     for (let r_id of set) {
+        // eslint-disable-next-line no-undef
         let recette = recipes[r_id - 1];
         recette.ingredients.forEach(ing => {
             let key = ing.ingredient.toLowerCase();
@@ -51,6 +57,7 @@ function loadUstensiles(set) {
     if (!set) set = allRecipesSet;
     const ustMap = new Map();
     for (let r_id of set) {
+        // eslint-disable-next-line no-undef
         let recette = recipes[r_id - 1];
         recette.ustensils.forEach(u => {
             let key = u.toLowerCase();
@@ -72,6 +79,7 @@ function loadAppareils(set) {
     if (!set) set = allRecipesSet;
     const appMap = new Map();
     for (let r_id of set) {
+        // eslint-disable-next-line no-undef
         let recette = recipes[r_id - 1];
         let key = recette.appliance.toLowerCase();
         let recipesTab = appMap.get(key);
@@ -96,6 +104,7 @@ function search(evt) {
         if (currentTags["ingrédients"].length === 0 && currentTags.appareils.length === 0 && currentTags.ustensiles.length === 0) {
             updateInterfaceWithSet(principalSearchSet);
         } else {
+            // eslint-disable-next-line no-undef
             currentSet = interWithTags();
             updateInterfaceWithSet(currentSet);
         }
@@ -105,11 +114,12 @@ function search(evt) {
         currentSet.clear();
         let recipesSection = document.querySelector(".recipes");
         recipesSection.innerHTML = "";
-
+    // eslint-disable-next-line no-undef
         for (let i = 0; i < recipes.length; i++) {
             let allWordsFoundInRecipe = true;
             let j;
             for (j = 0; j < words.length; j++) {
+                // eslint-disable-next-line no-undef
                 let ings = recipes[i].ingredients;
                 let foundIfIngredients = 0;
                 for (let k = 0; k < ings.length; k++) {
@@ -120,7 +130,7 @@ function search(evt) {
                         // quitter le parcours des ingrédients et passer à la suite
                         break; // sur k (les ingrédients)
                     }
-                };
+                }
 
                 if (foundIfIngredients) {
                     // le j-ème mot de la recherche principale a été trouvé dans les ingrédients, inutile de
@@ -130,7 +140,7 @@ function search(evt) {
                 }
 
                 // continuer la recherche dans le titre
-
+                // eslint-disable-next-line no-undef
                 if (recipes[i].name.toLowerCase().includes(words[j])) {
                     // le j-ème mot de la recherche principale a été trouvé dans le titre inutile de
                     // le rechercher dans la description
@@ -139,7 +149,7 @@ function search(evt) {
                 }
 
                 // continuer la recherche dans la description
-
+                // eslint-disable-next-line no-undef
                 if (recipes[i].description.toLowerCase().includes(words[j])) {
                     // le j-ème mot de la recherche principale a été trouvé dans la description
                     // marquer le mot comme trouvé et passer au mot suivant                                     
@@ -156,7 +166,9 @@ function search(evt) {
             // été mis à false lors du parcours d'un des mots  <=> recherche positive: afficher la recette 
             if (j === words.length && allWordsFoundInRecipe) {
                 principalSearchSet.add(i + 1); //recipes[i].id);
-                if ((currentTags["ingrédients"].length === 0 && currentTags.appareils.length === 0 && currentTags.ustensiles.length === 0) || recipeRespectsAllTags(i + 1)) {
+                if ((currentTags["ingrédients"].length === 0 && currentTags.appareils.length === 0 && currentTags.ustensiles.length === 0)                    
+                    // eslint-disable-next-line no-undef
+                    || recipeRespectsAllTags(i + 1)) {
                     addToInterface(i + 1);
                     currentSet.add(i + 1);
                 }
@@ -182,6 +194,7 @@ function displaySet(set) {
     let recipesSection = document.querySelector(".recipes");
     recipesSection.innerHTML = "";
     for (let id of set) {
+        // eslint-disable-next-line no-undef
         recipesSection.appendChild(new Card(recipes[id - 1]).html);
     }
 }
@@ -198,6 +211,7 @@ function updateInterfaceWithSet(set) {
 // contenu des combos.
 function addToInterface(recetteId) {
     let recipesSection = document.querySelector(".recipes");
+    // eslint-disable-next-line no-undef
     recipesSection.appendChild(new Card(recipes[recetteId - 1]).html);
     // le contenu des combos n'est mis à jour qu'une fois la recherche principale terminée 
 }

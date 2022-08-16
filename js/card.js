@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 class Card {
     constructor(data) {
         this.data = data;
@@ -57,7 +58,7 @@ class Card {
     }
 }
 
-function adaptUnit(unit, quant) {
+function adaptUnit(unit) {
     if (unit === 'grammes')
         return 'g'
     else if (unit === 'cuillère à soupe' || unit === 'cuillères à soupe') {
