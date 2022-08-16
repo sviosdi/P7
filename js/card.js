@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 class Card {
     constructor(data) {
         this.data = data;
@@ -39,7 +40,7 @@ class Card {
 
 
         let ingredients = this.data.ingredients;
-        ingredients.forEach(ing => {
+        ingredients.forEach((ing) => {
             let line = document.createElement("p");           
             let quantity = document.createElement("span");          
             let unit = ing.unit ? adaptUnit(ing.unit) : "";
@@ -57,7 +58,7 @@ class Card {
     }
 }
 
-function adaptUnit(unit, quant) {
+function adaptUnit(unit) {
     if (unit === 'grammes')
         return 'g'
     else if (unit === 'cuillère à soupe' || unit === 'cuillères à soupe') {
@@ -67,3 +68,5 @@ function adaptUnit(unit, quant) {
     } else return unit;
 
 }
+
+
